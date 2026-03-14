@@ -89,7 +89,7 @@ class CPoint2
 	 * \param p
 	 * \return cuccrent point is substracted by p.
 	 */
-	CPoint2  & operator -= ( const CPoint & p)  { m_c[0] -= p[0]; m_c[1] -= p[1]; return *this; };
+	CPoint2  & operator -= ( const CPoint2 & p)  { m_c[0] -= p[0]; m_c[1] -= p[1]; return *this; };
 	/*!
 	 * Multiply by a scalar
 	 * \param s scalar
