@@ -29,12 +29,10 @@ public:
 	 * CPoint constructor, specifying \f$(x,y,z)\f$
 	 */
 	CPoint( double x, double y, double z ){ v[0] = x; v[1] = y; v[2] = z;};
-
 	/*!
 	*	CPoint default constructor, initialized as (0,0,0)
 	*/
 	CPoint() { v[0] = v[1] = v[2] = 0; };
-
 	/*!
 	*	CPoint destructor
 	*/
@@ -46,19 +44,18 @@ public:
 	*   \return CPoint[i]
 	*/
 	double & operator[]( int i)		  { assert( 0<=i && i<3 ); return v[i]; };
-
 	/*!
 	*	constant (x,y,z) value
 	*   \param i index
 	*   \return CPoint[i]
 	*/
 	double   operator()( int i) const { assert( 0<=i && i<3 ); return v[i]; };
-
 	/*!
 	*	constant  \f$(x,y,z)\f$ value
 	*   \param i index
 	*   \return CPoint[i]
 	*/
+
 	double   operator[]( int i) const { assert( 0<=i && i<3 ); return v[i]; };
 
 	/*!
@@ -72,21 +69,19 @@ public:
 	 * \return cuccrent point is added by p.
 	 */
 	CPoint  & operator += ( const CPoint & p) { v[0] += p(0); v[1] += p(1); v[2] += p(2); return *this; }; 
-
 	/*!
 	 * Substract another point to the current point
 	 * \param p
 	 * \return cuccrent point is substracted by p.
 	 */
 	CPoint  & operator -= ( const CPoint & p)  { v[0] -= p(0); v[1] -= p(1); v[2] -= p(2); return *this; };
-
 	/*!
 	 * Multiply by a scalar
 	 * \param s scalar
 	 * \return current point is multipolied by s.
 	 */
+	
 	CPoint  & operator *= ( const double  s) { v[0] *= s   ; v[1] *=    s; v[2] *=    s; return *this; };
-
 	/*!
 	 * Divide by a scalar
 	 * \param s scalar
@@ -99,6 +94,7 @@ public:
 	 * \param p another point
 	 * \return dot product of current point with p.
 	 */
+
 	double   operator*( const CPoint & p ) const 
 	{
 		return v[0] * p[0] + v[1] * p[1] + v[2] * p[2]; 
@@ -114,7 +110,6 @@ public:
 		CPoint r( v[0] + p[0], v[1] + p[1], v[2] + p[2] );
 		return r;
 	};
-
 	/*!
 	 * Substract another point to the current point
 	 * \param p
@@ -125,7 +120,6 @@ public:
 		CPoint r( v[0] - p[0], v[1] - p[1], v[2] - p[2] );
 		return r;
 	};
-
 	/*!
 	 * Multiply by a scalar
 	 * \param s scalar
@@ -136,7 +130,6 @@ public:
 		CPoint r( v[0] * s, v[1] * s, v[2] * s );
 		return r;
 	};
-	
 	/*!
 	 * Divide by a scalar
 	 * \param s scalar
@@ -188,23 +181,12 @@ protected:
 };
 
 /*!
- * Multiply a scalar by a CPoint
- * \param s scalar
- * \param p three dimensional point
- * \return the point multiplied by the scalar
- */
-inline CPoint operator*( double s, const CPoint & p )
-{
-    return p * s;
-}
-
-/*!
  *	Read a CPoint from a string
  * \param str string
  * \param p three dimenionsal point
- * \return the input string reference to support chaining
+ * \return the (x,y,z) value is read from str and assigned to p.
  */
-inline const std::string & operator>>(const std::string & str, CPoint &p )
+inline void operator>>(const std::string & str, CPoint &p )
 {
 	std::string t = str;
 	t.erase(0, t.find_first_not_of("()") );
@@ -212,19 +194,6 @@ inline const std::string & operator>>(const std::string & str, CPoint &p )
 	std::istringstream iss( t );
 
 	iss >> p[0] >> p[1] >> p[2];
-    return str;
-}
-
-/*!
- * Write a CPoint to an output stream
- * \param os output stream
- * \param p three dimensional point
- * \return the output stream reference to support chaining
- */
-inline std::ostream & operator<<( std::ostream & os, const CPoint & p )
-{
-    os << "(" << p[0] << ", " << p[1] << ", " << p[2] << ")";
-    return os;
 }
 
 
