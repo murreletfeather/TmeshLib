@@ -1,10 +1,10 @@
 /*!
 *      \file BaseMesh.h
-*      \brief Base Mesh Class for all types of Mesh Classes
+*      \brief 所有网格类的基类
 *
-*		This is the fundamental class for meshes
-*	   \author David Gu
-*      \date 10/07/2010
+*		这是网格的基础类
+*	   \作者 David Gu
+*      \日期 10/07/2010
 *
 */
 
@@ -25,377 +25,376 @@
 #include "../Geometry/Point2.h"
 #include "../Parser/StrUtil.h"
 
-namespace MeshLib{
+namespace MeshLib
+{
 
 /*!
-* \brief CBaseMesh, base class for all types of mesh classes
+* \brief CBaseMesh, 所有网格类型的基类
 *
-*  This is the fundamental class for meshes. It includes a list of vertices,
-*  a list of edges, a list of faces. All the geometric objects are connected by pointers,
-*  vertex, edge, face are connected by halfedges. The mesh class has file IO functionalities,
-*  supporting .obj, .m and .off file formats. It offers Euler operators, each geometric primative
-*  can access its neighbors freely. 
+*  这是网格的基础类，包含顶点列表、边列表和面列表。所有几何对象通过指针连接，
+*  顶点、边和面都通过半边结构连接。网格类提供文件IO功能，支持.obj、.m和.off文件格式。
+*  提供欧拉操作，每个几何图元都可以自由访问邻居。
 *  
-* \tparam CVertex   vertex   class, derived from MeshLib::CVertex   class
-* \tparam CEdge     edge     class, derived from MeshLib::CEdge     class
-* \tparam CFace     face     class, derived from MeshLib::CFace     class
-* \tparam CHalfEdge halfedge class, derived from MeshLib::CHalfEdge class
+* \tparam CVertex   顶点类，派生自 MeshLib::CVertex   类
+* \tparam CEdge     边类，派生自 MeshLib::CEdge     类
+* \tparam CFace     面对类，派生自 MeshLib::CFace     类
+* \tparam CHalfEdge 半边类，派生自 MeshLib::CHalfEdge 类
 */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 class CBaseMesh
 {
 public:
-	// pointer to Vertices, Halfedges, Edges, Face and Solid
+	// 顶点、半边、边、面的指针类型定义
 	typedef CVertex   * tVertex;
 	typedef CHalfEdge * tHalfEdge;
 	typedef CEdge     * tEdge;
 	typedef CFace     * tFace;
 
-	//constructor and destructor
+	// 构造函数和析构函数
 	/*!
-	CBaseMesh constructor.
+	构造函数
 	*/
 	CBaseMesh(){};
 	/*!
-	CBasemesh destructor
+	析构函数
 	*/
 	~CBaseMesh();
 
-	//copy operator
+	// 拷贝操作
 	/*!
-	Copy operator
+	拷贝运算符
 	*/
 	void copy( CBaseMesh & mesh );
 
-	//file io
+	// 文件IO
 	/*!
-	Read an .obj file.
-	\param filename the input .obj file name
+	读取.obj文件
+	\param filename 输入.obj文件名
 	*/
 	void read_obj(  const char * filename );
 	/*!
-	Write an .obj file.
-	\param output the output .obj file name
+	写入.obj文件
+	\param output 输出.obj文件名
 	*/
 	void write_obj( const char * output);
 
 	/*!
-	Read an .m file.
-	\param input the input obj file name
+	读取.m文件
+	\param input 输入.m文件名
 	*/
 	void read_m(  const char * input );
 	/*!
-	Write an .m file.
-	\param output the output .m file name
+	写入.m文件
+	\param output 输出.m文件名
 	*/
 	void write_m( const char * output);
 	
 	/*!
-	Read an .off file
-	\param input the input .off filename
+	读取.off文件
+	\param input 输入.off文件名
 	*/
 	void read_off( const char * input );
 	/*!
-	Write an .off file.
-	\param output the output .off file name
+	写入.off文件
+	\param output 输出.off文件名
 	*/
 	void write_off( const char * output);
 
-	//number of vertices, faces, edges
-	/*! number of vertices */
+	// 顶点、面、边数量
+	/*! 顶点数量 */
 	int  numVertices();
-	/*! number of edges */
+	/*! 边数量 */
 	int  numEdges();
-	/*! number of faces */
+	/*! 面数量 */
 	int  numFaces();
 
-	//is boundary
-	/*! whether a vertex is on the boundary
-	\param v the pointer to the vertex
+	// 判断是否在边界上
+	/*! 判断顶点是否在边界上
+	\param v 顶点指针
 	*/
 	bool    isBoundary( tVertex  v );
-	/*! whether an edge is on the boundary
-	\param e the pointer to the edge
+	/*! 判断边是否在边界上
+	\param e 边指针
 	*/
 	bool    isBoundary( tEdge    e );
-	/*! whether a halfedge is on the boundary
-	\param he the pointer to the halfedge
+	/*! 判断半边是否在边界上
+	\param he 半边指针
 	*/
 	bool    isBoundary( tHalfEdge  he );
 
-	//acess vertex - id
+	// 根据ID访问顶点
 	/*!
-	Access a vertex by its id
-	\param id the vertex id
-	\return the vertex, whose ID equals to id. NULL, if there is no such a vertex.
+	通过ID访问顶点
+	\param id 顶点ID
+	\return ID等于id的顶点，如果不存在返回NULL
 	*/
 	tVertex idVertex( int id );
 	/*!
-	The vertex id
-	\param v the input vertex
-	\return the vertex id.
+	获取顶点ID
+	\param v 输入顶点
+	\return 顶点ID
 	*/
 	int     vertexId( tVertex  v );
 
-	//access face - id
+	// 根据ID访问面
 	/*!
-	Access a face by its id
-	\param id the face id
-	\return the face, whose ID equals to id. NULL, if there is no such a face.
+	通过ID访问面
+	\param id 面ID
+	\return ID等于id的面，如果不存在返回NULL
 	*/
 	tFace   idFace( int id );
 	/*!
-	The face id
-	\param f the input face
-	\return the face id.
+	获取面ID
+	\param f 输入面
+	\return 面ID
 	*/
 	int     faceId( tFace  f );
 
-	//access edge - edge key, vertex
+	// 通过两个顶点访问边
 	/*!
-	Access an edge by its two end vertices
-	\param v0 one vertex of the edge
-	\param v1 the other vertex of the edge
-	\return the edge connecting both v0 and v1, NULL if no such edge exists.
+	通过两个端点访问边
+	\param v0 边的一个顶点
+	\param v1 边的另一个顶点
+	\return 连接v0和v1的边，如果不存在返回NULL
 	*/
 	tEdge   vertexEdge( tVertex v0, tVertex v1 );
 
-	//access halfedge - halfedge key, vertex
+	// 通过两个顶点访问半边
 	/*!
-	Access a halfedge by its two end vertices
-	\param v0 one vertex of the halfedge
-	\param v1 the other vertex of the halfedge
-	\return the halfedge connecting both v0 and v1, NULL if no such edge exists.
+	通过两个端点访问半边
+	\param v0 半边的一个顶点
+	\param v1 半边的另一个顶点
+	\return 连接v0和v1的半边，如果不存在返回NULL
 	*/
 	
 	tHalfEdge   vertexHalfedge( tVertex v0, tVertex v1 );
 	/*!
-	Access a halfedge by its target vertex, and attaching face.
-	\param v target vertex 
-	\param f attaching face
-	\return halfedge, whose target is v, attaching face is f. NULL if no such an halfedge exists.
+	通过目标顶点和面访问半边
+	\param v 目标顶点 
+	\param f 关联面
+	\return 目标顶点为v，关联面为f的半边，如果不存在返回NULL
 	*/
 	tHalfEdge   corner( tVertex v, tFace f);
 
-	//halfedge->face
+	// 半边 -> 面
 	/*!
-	The face a halfedge attaching to. 
-	\param he the input halfedge
-	\return the face he attaches
+	获取半边关联的面
+	\param he 输入半边
+	\return 半边所附着的面
 	*/
 	tFace   halfedgeFace( tHalfEdge he );
-	//halfedge->vertex
+	// 半边 -> 顶点
 	/*!
-	The target vertex of a halfedge. 
-	\param he the input halfedge.
-	\return the target vertex of he.
+	获取半边的目标顶点
+	\param he 输入半边
+	\return 半边的目标顶点
 	*/
 	tVertex halfedgeVertex( tHalfEdge he );
-	//halfedge->vertex
+	// 半边 -> 顶点
 	/*!
-	The target vertex of a halfedge. 
-	\param he the input halfedge.
-	\return the target vertex of he.
+	获取半边的目标顶点
+	\param he 输入半边
+	\return 半边的目标顶点
 	*/
 	tVertex halfedgeTarget( tHalfEdge he );
-	//halfedge->vertex
+	// 半边 -> 顶点
 	/*!
-	The source vertex of a halfedge. 
-	\param he the input halfedge.
-	\return the source vertex of he.
+	获取半边的源顶点
+	\param he 输入半边
+	\return 半边的源顶点
 	*/
 	tVertex halfedgeSource( tHalfEdge he );
 
-	//halfedge->next
+	// 半边 -> 下一个半边
 	/*!
-	The next halfedge of a halfedge. 
-	\param he the input halfedge.
-	\return the next halfedge of he.
+	获取半边的下一个半边
+	\param he 输入半边
+	\return 输入半边he的下一个半边
 	*/
 
 	tHalfEdge   halfedgeNext( tHalfEdge he );
-	//halfedge->prev
+	// 半边 -> 前一个半边
 	/*!
-	The previous halfedge of a halfedge. 
-	\param he the input halfedge.
-	\return the next halfedge of he.
+	获取半边的前一个半边
+	\param he 输入半边
+	\return 输入半边he的前一个半边
 	*/
 	tHalfEdge   halfedgePrev( tHalfEdge he );
-	//halfedge->sym
+	// 半边 -> 对偶半边
 	/*!
-	The dual halfedge of a halfedge. 
-	\param he the input halfedge.
-	\return the dual halfedge of he.
+	获取半边的对偶半边
+	\param he 输入半边
+	\return 输入半边he的对偶半边
 	*/
 	tHalfEdge   halfedgeSym( tHalfEdge he );
-	//halfedge->edge
+	// 半边 -> 边
 	/*!
-	The edge of a halfedge. 
-	\param he the input halfedge.
-	\return the edge of he.
+	获取半边所属的边
+	\param he 输入半边
+	\return 半边所属的边
 	*/
 
 	tEdge       halfedgeEdge( tHalfEdge he );
-	//v->halfedge
+	// 顶点 -> 半边
 	/*!
-	The halfedge targeting at a vertex. 
-	\param v the input vertex.
-	\return the halfedge targeting at v, which is the most ccw in halfedge of v.
+	获取指向顶点v的半边，它是顶点v所有半边中最逆时针的
+	\param v 输入顶点
+	\return 指向顶点v的最逆时针半边
 	*/
 	tHalfEdge   vertexHalfedge( tVertex v );
-	//v->edges
+	// 顶点 -> 边列表
 	/*!
-	The edge list attaching to the vertex v, such that v is the first vertex of the edge
-	\param v the input vertex.
-	\return the reference to the edge list
+	获取附着在顶点v的边列表，其中v是边的第一个顶点
+	\param v 输入顶点
+	\return 边列表的引用
 	*/
 	std::list<tEdge> &  vertexEdges( tVertex v );
 
-	//edge->vertex
+	// 边 -> 顶点
 	/*!
-	The first vertex of an edge.
-	\param e the input edge.
-	\return the first vertex of e.
+	获取边的第一个顶点
+	\param e 输入边
+	\return 边e的第一个顶点
 	*/
 	tVertex edgeVertex1( tEdge  e );
 	/*!
-	The second vertex of an edge.
-	\param e the input edge.
-	\return the second vertex of e.
+	获取边的第二个顶点
+	\param e 输入边
+	\return 边e的第二个顶点
 	*/
 	tVertex edgeVertex2( tEdge  e );
 
-	//edge->face
+	// 边 -> 面
 	/*!
-	The first face attaching to an edge.
-	\param e the input edge.
-	\return the first face attaching to e.
+	获取边的第一个面
+	\param e 输入边
+	\return 附着在边e的第一个面
 	*/
 	tFace edgeFace1( tEdge  e );
 	/*!
-	The second face attaching to an edge.
-	\param e the input edge.
-	\return the second face attaching to e.
+	获取边的第二个面
+	\param e 输入边
+	\return 附着在边e的第二个面
 	*/
 	tFace edgeFace2( tEdge  e );
 
-	//edge->halfedge
+	// 边 -> 半边
 	/*!
-	The halfedge attaching to an edge.
-	\param e the input edge.
-	\param id the index of the halfedge, either 0 or 1
-	\return the halfedge[i] attaching to edge e.
+	获取边上索引为id的半边
+	\param e 输入边
+	\param id 半边索引，只能是0或1
+	\return 边e上的第id个半边
 	*/
 
 	tHalfEdge edgeHalfedge( tEdge  e, int id);
 
-	//face->halfedge
+	// 面 -> 半边
 	/*!
-	The first halfedge attaching to a face f.
-	\param f the input face.
-	\return the first halfedge attaching to f.
+	获取面的第一个半边
+	\param f 输入面
+	\return 面f的第一个半边
 	*/
 
 	tHalfEdge faceHalfedge( tFace f );
 
-	//Euler operations
+	// 欧拉操作
 	/*!
-	The most Clw Out HalfEdge of a vertex
-	\param v the input vertex.
-	\return the most Clw Out HalfEdge of v.
+	顶点最顺时针出半边
+	\param v 输入顶点
+	\return 顶点v的最顺时针出半边
 	*/
 	tHalfEdge vertexMostClwOutHalfEdge( tVertex  v );
 	/*!
-	The next Ccw Out HalfEdge 
-	\param he the input halfedge .
-	\return the next Ccw Out HalfEdge, sharing the same source of he.
+	下一个逆时针出半边
+	\param he 输入半边
+	\return 与he共享源顶点的下一个逆时针出半边
 	*/
 
 	tHalfEdge vertexNextCcwOutHalfEdge( tHalfEdge  he );
 
 	/*!
-	The most Ccw Out HalfEdge of a vertex
-	\param v the input vertex.
-	\return the most Ccw Out HalfEdge of v.
+	顶点最逆时针出半边
+	\param v 输入顶点
+	\return 顶点v的最逆时针出半边
 	*/
 	tHalfEdge vertexMostCcwOutHalfEdge( tVertex  v );
 	/*!
-	The next Clw Out HalfEdge 
-	\param he the input halfedge .
-	\return the next Clw Out HalfEdge, sharing the same source of he.
+	下一个顺时针出半边
+	\param he 输入半边
+	\return 与he共享源顶点的下一个顺时针出半边
 	*/
 	tHalfEdge vertexNextClwOutHalfEdge( tHalfEdge  he );
 
 	/*!
-	The most Clw In HalfEdge of a vertex
-	\param v the input vertex.
-	\return the most Clw In HalfEdge of v.
+	顶点最顺时针入半边
+	\param v 输入顶点
+	\return 顶点v的最顺时针入半边
 	*/
 	tHalfEdge vertexMostClwInHalfEdge( tVertex  v );
 	/*!
-	The next Ccw In HalfEdge 
-	\param he the input halfedge .
-	\return the next Ccw In HalfEdge, sharing the same target of he.
+	下一个逆时针入半边
+	\param he 输入半边
+	\return 与he共享目标顶点的下一个逆时针入半边
 	*/
 	tHalfEdge vertexNextCcwInHalfEdge( tHalfEdge  he );
 
 	/*!
-	The most Ccw In HalfEdge of a vertex
-	\param v the input vertex.
-	\return the most Ccw In HalfEdge of v.
+	顶点最逆时针入半边
+	\param v 输入顶点
+	\return 顶点v的最逆时针入半边
 	*/
 	tHalfEdge vertexMostCcwInHalfEdge( tVertex  v );
 	/*!
-	The next Clw In HalfEdge 
-	\param he the input halfedge .
-	\return the next Clw In HalfEdge, sharing the same target of he.
+	下一个顺时针入半边
+	\param he 输入半边
+	\return 与he共享目标顶点的下一个顺时针入半边
 	*/
 	tHalfEdge vertexNextClwInHalfEdge( tHalfEdge  he );
 
 	/*!
-	The most Clw HalfEdge of a face
-	\param face the input face.
-	\return the most Clw HalfEdge of f.
+	面的最顺时针半边
+	\param face 输入面
+	\return 面face的最顺时针半边
 	*/
 	
 	tHalfEdge faceMostClwHalfEdge( tFace  face );
 	/*!
-	The most Ccw HalfEdge of a face
-	\param face the input face.
-	\return the most Ccw HalfEdge of f.
+	面的最逆时针半边
+	\param face 输入面
+	\return 面face的最逆时针半边
 	*/
 	tHalfEdge faceMostCcwHalfEdge( tFace  face );
 	/*!
-	The next Ccw HalfEdge of a halfedge in a face
-	\param he the input halfedge.
-	\return the next Ccw HalfEdge of he in a face.
+	面中当前半边的下一个逆时针半边
+	\param he 输入半边
+	\return 面中he的下一个逆时针半边
 	*/
 	tHalfEdge faceNextCcwHalfEdge( tHalfEdge  he );
 	/*!
-	The next Clw HalfEdge of a halfedge in a face
-	\param he the input halfedge.
-	\return the next Clw HalfEdge of he in a face.
+	面中当前半边的下一个顺时针半边
+	\param he 输入半边
+	\return 面中he的下一个顺时针半边
 	*/
 	tHalfEdge faceNextClwHalfEdge( tHalfEdge  he );
 
 
 	/*!
-	Edge length
-	\param e the input edge
-	\return the length of the edge e
+	计算边长
+	\param e 输入边
+	\return 边e的长度
 	*/
 	double edgeLength( tEdge e );
 
 	/*!
-	List of the edges of the mesh.
+	获取网格边列表
 	*/
 	std::list<tEdge>   & edges()		{ return m_edges; };
 	/*!
-	List of the faces of the mesh.
+	获取网格面列表
 	*/
 	std::list<tFace>   & faces()		{ return m_faces; };
 	/*!
-	List of the vertices of the mesh.
+	获取网格顶点列表
 	*/
 	std::list<tVertex> & vertices()	{ return m_verts; };
 /*
@@ -404,57 +403,55 @@ public:
 */
 protected:
 
-  /*! list of edges */
-  std::list<tEdge>                          m_edges;
-  /*! list of vertices */
-  std::list<tVertex>                        m_verts;
-  /*! list of faces */
-  std::list<tFace>							m_faces;
+	/*! 边列表 */
+	std::list<tEdge>                          m_edges;
+	/*! 顶点列表 */
+	std::list<tVertex>                        m_verts;
+	/*! 面列表 */
+	std::list<tFace>						  m_faces;
 
-  //maps
+	// 映射表
 
-  /*! map between vetex and its id*/
-  std::map<int, tVertex>                    m_map_vert;
-  /*! map between face and its id*/
-  std::map<int, tFace>						m_map_face;
-
-
+	/*! 顶点ID到顶点指针的映射表 */
+	std::map<int, tVertex>                    m_map_vert;
+	/*! 面ID到面对指针的映射表 */
+	std::map<int, tFace>					  m_map_face;
 public:
-	/*! Create a vertex 
-	\param id Vertex id
-	\return pointer to the new vertex
+	/*! 创建顶点
+	\param id 顶点ID
+	\return 新创建顶点的指针
 	*/
 	tVertex   createVertex(   int id = 0 );
-	/*! Create an edge
-	\param v1 end vertex of the edge
-	\param v2 end vertex of the edge
-	\return pointer to the new edge
+	/*! 创建边
+	\param v1 边的第一个端点
+	\param v2 边的第二个端点
+	\return 新创建边的指针
 	*/
 	tEdge     createEdge(	tVertex v1, tVertex v2 );
-	/*! Create a face
-	\param v an array of vertices
-	\param id face id
-	\return pointer to the new face
+	/*! 创建面
+	\param v 顶点数组
+	\param id 面ID
+	\return 新创建面的指针
 	*/
-	tFace     createFace(   tVertex  v[], int id ); //create a triangle
-	/*! Create a face
-	\param v an array of vertices
-	\param id face id
-	\return pointer to the new face
+	tFace     createFace(   tVertex  v[], int id ); // 创建三角形
+	/*! 创建面
+	\param v 顶点向量数组
+	\param id 面ID
+	\return 新创建面的指针
 	*/
-	tFace     createFace(   std::vector<tVertex> &  v, int id ); //create a triangle
+	tFace     createFace(   std::vector<tVertex> &  v, int id ); // 创建三角形
 
-	/*! delete one face
-	\param pFace the face to be deleted
+	/*! 删除一个面
+	\param pFace 要删除的面
 	*/
 	void      deleteFace( tFace  pFace );
 	
-	/*! whether the vertex is with texture coordinates */
+	/*! 顶点是否包含纹理坐标 */
 	bool      m_with_texture;
-	/*! whether the mesh is with normal */
+	/*! 网格是否包含法向量 */
 	bool      m_with_normal;
 
-	/*! label boundary vertices, edges, faces */
+	/*! 标记边界顶点、边、面 */
 	void labelBoundary( void );
 
 };
@@ -462,9 +459,9 @@ public:
 
 
 /*!
-The first vertex of an edge.
-\param e the input edge.
-\return the first vertex of e.
+获取边的第一个顶点
+\param e 输入边
+\return 边e的第一个顶点
 */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 CVertex * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::edgeVertex1( tEdge   e )
@@ -474,9 +471,9 @@ CVertex * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::edgeVertex1( tEdge   e )
 };
 
 /*!
-The second vertex of an edge.
-\param e the input edge.
-\return the first vertex of e.
+获取边的第二个顶点
+\param e 输入边
+\return 边e的第二个顶点
 */
 
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
@@ -487,9 +484,9 @@ CVertex *  CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::edgeVertex2( tEdge   e )
 };
 
 /*!
-The first face attaching to an edge.
-\param e the input edge.
-\return the first face attaching to e.
+获取边的第一个面
+\param e 输入边
+\return 边e上附着的第一个面
 */
 
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
@@ -499,12 +496,12 @@ CFace * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::edgeFace1( tEdge   e )
 	return (CFace*) e->halfedge(0)->face();
 };
 
-//access he->f
+// 半边 -> 边
 /*!
-The halfedge attaching to an edge.
-\param e the input edge.
-\param id the index of the halfedge, either 0 or 1
-\return the halfedge[i] attaching to edge e.
+获取边上第id个半边
+\param e 输入边
+\param id 半边索引，0或1
+\return 边e上第id个半边
 */
 
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
@@ -826,11 +823,12 @@ inline CHalfEdge *  CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::faceMostCcwHalfEdg
 {
 	return (CHalfEdge*)face->halfedge();
 };
-/*!
+	/*!
 	The most Clw HalfEdge in a face
 	\param face the input face.
 	\return the most Clw HalfEdge in a face.
-	*/template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
+	*/
+template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::faceMostClwHalfEdge( tFace   face )
 {
 	return (CHalfEdge*)face->halfedge()->he_next();
@@ -1512,7 +1510,8 @@ void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::read_m( const char * input )
 /*!
 	Write an .m file.
 	\param output the output .m file name
-	*/template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
+	*/
+template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::write_m( const char * output )
 {
 	//write traits to string
