@@ -510,11 +510,11 @@ CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::edgeHalfedge( tEdge   e, i
 	return (CHalfEdge*)e->halfedge(id);
 };
 
-//access e->f
+// 边 -> 面
 /*!
-The second face attaching to an edge.
-\param e the input edge.
-\return the first face attaching to e.
+获取边的第二个面
+\param e 输入边
+\return 附着在边e的第二个面
 */
 
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
@@ -524,25 +524,24 @@ CFace * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::edgeFace2( tEdge   e )
 	return (CFace*) e->halfedge(1)->face();
 };
 
-//access he->f
+// 半边 -> 面
 /*!
-	The face a halfedge attaching to. 
-	\param he the input halfedge
-	\return the face he attaches
-	*/
+获取半边附着的面
+\param he 输入半边
+\return 半边he所附着的面
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CFace * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::halfedgeFace( tHalfEdge   he )
 {
 	return (CFace*)he->face();
 };
 
-//access f->he
-	/*!
-	The first halfedge attaching to a face f.
-	\param f the input face.
-	\return the first halfedge attaching to f.
-	*/
-
+// 面 -> 半边
+/*!
+获取面的第一个半边
+\param f 输入面
+\return 面f的第一个半边
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::faceHalfedge( tFace   f )
 {
@@ -550,110 +549,109 @@ inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::faceHalfedge( tFace
 };
 
 
-//access he->next
+// 半边 -> 下一个半边
 /*!
-	The next halfedge of a halfedge. 
-	\param he the input halfedge.
-	\return the next halfedge of he.
-	*/
-
+获取半边的下一个半边
+\param he 输入半边
+\return 输入半边he的下一个半边
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::halfedgeNext( tHalfEdge   he )
 {
 	return (CHalfEdge*)he->he_next();
 };
 
-//access he->prev
+// 半边 -> 前一个半边
 /*!
-	The previous halfedge of a halfedge. 
-	\param he the input halfedge.
-	\return the next halfedge of he.
-	*/
+获取半边的前一个半边
+\param he 输入半边
+\return 输入半边he的前一个半边
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::halfedgePrev( tHalfEdge  he )
 {
 	return (CHalfEdge*)he->he_prev();
 };
 
-//access he->sym
+// 半边 -> 对偶半边
 /*!
-	The dual halfedge of a halfedge. 
-	\param he the input halfedge.
-	\return the dual halfedge of he.
-	*/
+获取半边的对偶半边
+\param he 输入半边
+\return 输入半边he的对偶半边
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::halfedgeSym( tHalfEdge   he )
 {
 	return (CHalfEdge*)he->he_sym();
 };
 
-//access he->edge
+// 半边 -> 边
 /*!
-	The edge of a halfedge. 
-	\param he the input halfedge.
-	\return the edge of he.
-	*/
+获取半边所属的边
+\param he 输入半边
+\return 半边he所属的边
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::halfedgeEdge( tHalfEdge  he )
 {
 	return (CEdge*)he->edge();
 };
 
-//access he->v
+// 半边 -> 顶点
 /*!
-	The target vertex of a halfedge. 
-	\param he the input halfedge.
-	\return the target vertex of he.
-	*/
+获取半边的目标顶点
+\param he 输入半边
+\return 半边he的目标顶点
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CVertex * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::halfedgeVertex( tHalfEdge  he )
 {
 	return (CVertex*)he->vertex();
 };
 
-//access he->v
+// 半边 -> 顶点
 /*!
-	The target vertex of a halfedge. 
-	\param he the input halfedge.
-	\return the target vertex of he.
-	*/
+获取半边的目标顶点
+\param he 输入半边
+\return 半边he的目标顶点
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CVertex * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::halfedgeTarget( tHalfEdge   he )
 {
 	return (CVertex*)he->vertex();
 };
 
-//access he->v
+// 半边 -> 顶点
 /*!
-	The source vertex of a halfedge. 
-	\param he the input halfedge.
-	\return the source vertex of he.
-	*/
+获取半边的源顶点
+\param he 输入半边
+\return 半边he的源顶点
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CVertex * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::halfedgeSource( tHalfEdge   he )
 {
 	return (CVertex*)he->he_prev()->vertex();
 };
-/*! whether a vertex is on the boundary
-	\param v the pointer to the vertex
-	*/
+/*! 判断顶点是否在边界上
+\param v 顶点指针
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline bool CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::isBoundary( tVertex   v )
 {
 	return v->boundary();
 };
-/*! whether an edge is on the boundary
-	\param e the pointer to the edge
-	*/
+/*! 判断边是否在边界上
+\param e 边指针
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline bool CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::isBoundary( tEdge   e )
 {
 	if( e->halfedge(0) == NULL || e->halfedge(1) == NULL ) return true;
 	return false;
 };
-/*! whether a halfedge is on the boundary
-	\param he the pointer to the halfedge
-	*/
+/*! 判断半边是否在边界上
+\param he 半边指针
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline bool CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::isBoundary( tHalfEdge   he )
 {
@@ -661,7 +659,7 @@ inline bool CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::isBoundary( tHalfEdge   he
 	return false;
 };
 
-/*! Number of vertices of the mesh
+/*! 获取网格顶点数量
 */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline int CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::numVertices() 
@@ -669,7 +667,7 @@ inline int CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::numVertices()
 	return (int) m_verts.size();
 };
 
-/*! Number of edges of the mesh
+/*! 获取网格边数量
 */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline int CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::numEdges() 
@@ -677,7 +675,7 @@ inline int CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::numEdges()
 	return (int) m_edges.size();
 };
 
-/*! Number of faces of the mesh
+/*! 获取网格面数量
 */
 
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
@@ -687,22 +685,22 @@ inline int CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::numFaces()
 };
 
 
-//Euler operation
+// 欧拉操作
 /*!
-	The most Clw Out HalfEdge of a vertex
-	\param v the input vertex.
-	\return the most Clw Out HalfEdge of v.
-	*/
+获取顶点最顺时针出半边
+\param v 输入顶点
+\return 顶点v的最顺时针出半边
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge *  CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::vertexMostClwOutHalfEdge( tVertex   v )
 {
 	return (CHalfEdge*)v->most_clw_out_halfedge();
 };
 /*!
-	The next Ccw Out HalfEdge 
-	\param v the input vertex.
-	\return the next Ccw Out HalfEdge, sharing the same source of he.
-	*/
+获取顶点最逆时针出半边
+\param v 输入顶点
+\return 顶点v的最逆时针出半边
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::vertexMostCcwOutHalfEdge( tVertex   v )
 {
@@ -710,11 +708,11 @@ inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::vertexMostCcwOutHal
 };
 
 /*!
-	Access a halfedge by its target vertex, and attaching face.
-	\param v target vertex 
-	\param f attaching face
-	\return halfedge, whose target is v, attaching face is f. NULL if no such an halfedge exists.
-	*/
+通过目标顶点和面获取角点半边
+\param v 目标顶点 
+\param f 关联面
+\return 目标顶点为v，附着面为f的半边，如果不存在返回NULL
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::corner( tVertex  v, tFace  f)
 {
@@ -727,55 +725,52 @@ inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::corner( tVertex  v,
 	return NULL;
 };
 /*!
-	The next Ccw Out HalfEdge 
-	\param he the input halfedge .
-	\return the next Ccw Out HalfEdge, sharing the same source of he.
-	*/
+获取下一个逆时针出半边
+\param he 输入半边
+\return 与he共享源顶点的下一个逆时针出半边
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::vertexNextCcwOutHalfEdge( tHalfEdge  he )
 {
 	return (CHalfEdge*) he->ccw_rotate_about_source();
 };
 /*!
-	The next Clw Out HalfEdge 
-	\param he the input halfedge .
-	\return the next Clw Out HalfEdge, sharing the same source of he.
-	*/
+获取下一个顺时针出半边
+\param he 输入半边
+\return 与he共享源顶点的下一个顺时针出半边
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::vertexNextClwOutHalfEdge( tHalfEdge   he )
 {
 	assert( he->he_sym() != NULL );
 	return (CHalfEdge*)he->clw_rotate_about_source();
 };
-	/*!
-	The most Clw In HalfEdge of a vertex
-	\param v the input vertex.
-	\return the most Clw In HalfEdge of v.
-	*/
-
+/*!
+获取顶点最顺时针入半边
+\param v 输入顶点
+\return 顶点v的最顺时针入半边
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::vertexMostClwInHalfEdge( tVertex   v )
 {
 	return (CHalfEdge*)v->most_clw_in_halfedge();
 };
-	/*!
-	The most Ccw In HalfEdge of a vertex
-	\param v the input vertex.
-	\return the most Clw In HalfEdge of v.
-	*/
-
+/*!
+获取顶点最逆时针入半边
+\param v 输入顶点
+\return 顶点v的最逆时针入半边
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::vertexMostCcwInHalfEdge( tVertex   v )
 {
 	return (CHalfEdge*)v->most_ccw_in_halfedge();
 };
 
-	/*!
-	The next Ccw In HalfEdge 
-	\param he the input halfedge .
-	\return the next Ccw In HalfEdge, sharing the same target of he.
-	*/
-
+/*!
+获取下一个逆时针入半边
+\param he 输入半边
+\return 与he共享目标顶点的下一个逆时针入半边
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::vertexNextCcwInHalfEdge( tHalfEdge   he )
 {
@@ -783,30 +778,30 @@ inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::vertexNextCcwInHalf
 	return (CHalfEdge*)he->ccw_rotate_about_target();
 };
 /*!
-	The next Clw In HalfEdge 
-	\param he the input halfedge .
-	\return the next Clw In HalfEdge, sharing the same target of he.
-	*/
+获取下一个顺时针入半边
+\param he 输入半边
+\return 与he共享目标顶点的下一个顺时针入半边
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::vertexNextClwInHalfEdge( tHalfEdge   he )
 {
 	return (CHalfEdge*)he->clw_rotate_about_target();
 };
 /*!
-	The next Clw HalfEdge of a halfedge in a face
-	\param he the input halfedge.
-	\return the next Clw HalfEdge of he in a face.
-	*/
+获取面中半边的下一个顺时针半边
+\param he 输入半边
+\return 面中he的下一个顺时针半边
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::faceNextClwHalfEdge( tHalfEdge   he )
 {
 	return (CHalfEdge*)he->he_prev();
 };
 /*!
-	The next Ccw HalfEdge of a halfedge in a face
-	\param he the input halfedge.
-	\return the next Ccw HalfEdge of he in a face.
-	*/
+获取面中半边的下一个逆时针半边
+\param he 输入半边
+\return 面中he的下一个逆时针半边
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::faceNextCcwHalfEdge( tHalfEdge   he )
 {
@@ -814,28 +809,29 @@ inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::faceNextCcwHalfEdge
 };
 
 /*!
-	The most Ccw HalfEdge of a face
-	\param face the input face.
-	\return the most Ccw HalfEdge of f.
-	*/
+获取面的最逆时针半边
+\param face 输入面
+\return 面face的最逆时针半边
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge *  CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::faceMostCcwHalfEdge( tFace   face )
 {
 	return (CHalfEdge*)face->halfedge();
 };
-	/*!
-	The most Clw HalfEdge in a face
-	\param face the input face.
-	\return the most Clw HalfEdge in a face.
-	*/
+/*!
+获取面的最顺时针半边
+\param face 输入面
+\return 面face的最顺时针半边
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::faceMostClwHalfEdge( tFace   face )
 {
 	return (CHalfEdge*)face->halfedge()->he_next();
 };
+
 /*!
- CBaseMesh destructor
- */
+析构函数
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::~CBaseMesh()
 {
@@ -889,7 +885,9 @@ CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::~CBaseMesh()
 };
 
 /*!
-	Edge length
+计算边长
+\param e 输入边
+\return 边e的长度
 */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 double CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::edgeLength( tEdge  e )
@@ -901,12 +899,11 @@ double CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::edgeLength( tEdge  e )
 }
 
 
-//create new gemetric simplexes
-/*! Create a vertex 
-\param id Vertex id
-\return pointer to the new vertex
+// 创建新几何单元
+/*! 创建顶点
+\param id 顶点ID
+\return 新创建顶点指针
 */
-
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 CVertex * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::createVertex( int id )
 {
@@ -920,10 +917,9 @@ CVertex * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::createVertex( int id )
 
 
 /*!
-Read an .obj file.
-\param filename the filename .obj file name
+读取obj文件
+\param filename 输入obj文件名
 */
-
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::read_obj( const char * filename )
 {
@@ -953,8 +949,7 @@ void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::read_obj( const char * filename )
 		stokenizer.nextToken();
 		std::string token = stokenizer.getToken();
 		
-		if( token == "v" )
-		{
+		if(token == "v") {
 			CPoint p;
 			for( int i = 0; i < 3; i ++ )
 			{
@@ -970,8 +965,7 @@ void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::read_obj( const char * filename )
 		}
 
 
-		if( token == "vt" )
-		{
+		if(token == "vt") {
 			with_uv = true;
 			CPoint2 uv;
 			for( int i = 0; i < 2; i ++ )
@@ -985,8 +979,7 @@ void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::read_obj( const char * filename )
 		}
 
 
-		if ( token ==  "vn" )
-		{
+		if(token == "vn") {
 			with_normal = true;
 
 			CPoint n;
@@ -1000,11 +993,7 @@ void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::read_obj( const char * filename )
 			continue;
 		}
 
-
-
-
-		if ( token == "f" )
-		{
+		if(token == "f") {
 			CVertex* v[3];
 			for( int i = 0 ; i < 3; i ++ )
 			{
@@ -1184,10 +1173,7 @@ CEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::createEdge( tVertex  v1, tVert
 
 
 	return e;
-
 };
-
-
 
 //access vertex->edge
 /*!
@@ -1289,8 +1275,7 @@ void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::read_m( const char * input )
 		stokenizer.nextToken();
 		std::string token = stokenizer.getToken();
 	
-		if( token == "Vertex"  ) 
-		{
+		if(token == "Vertex") {
 			stokenizer.nextToken();
 			token = stokenizer.getToken();
 			id = strutil::parseString<int>(token);
@@ -1321,8 +1306,7 @@ void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::read_m( const char * input )
 		}
 		
 
-		if( token == "Face" ) 
-		{
+		if(token == "Face") {
 
 			stokenizer.nextToken();
 			token = stokenizer.getToken();
@@ -1347,8 +1331,7 @@ void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::read_m( const char * input )
 		}
 
 		//read in edge attributes
-		if( token == "Edge" )
-		{
+		if(token == "Edge") {
 			stokenizer.nextToken();
 			token = stokenizer.getToken();
 			int id0 = strutil::parseString<int>( token );
@@ -1377,8 +1360,7 @@ void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::read_m( const char * input )
 		}
 
 		//read in edge attributes
-		if( token == "Corner" ) 
-		{
+		if(token == "Corner") {
 			stokenizer.nextToken();
 			token = stokenizer.getToken();
 			int vid = strutil::parseString<int>( token );
@@ -1854,7 +1836,7 @@ void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::read_off( const char * input )
 
 		stokenizer.nextToken();
 		std::string token = stokenizer.getToken();
-		if( token == "OFF"  || token == "NOFF" ) break;
+		if(token == "OFF" || token == "NOFF") break;
 	}
 
 	int nVertices, nFaces, nEdges;
