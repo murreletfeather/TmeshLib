@@ -1,6 +1,6 @@
 /*!
 *      \file Vertex.h
-*      \brief Base class of vertex
+*      \brief 顶点基类，所有顶点类的基础
 *	   \author David Gu
 *      \date 10/07/2010
 *
@@ -16,196 +16,222 @@
 #include "../Geometry/Point2.h"
 #include "HalfEdge.h"
 
-namespace MeshLib{
+namespace MeshLib
+{
 
-  class CHalfEdge;
+class CHalfEdge;
+class CEdge;
 
-  /*!
-  \brief CVertex class, which is the base class of all kinds of vertex classes
-  */
+/*!
+ *  \brief CVertex 顶点类，是所有顶点类型的基类
+ *
+ *  基于半边数据结构，存储顶点基本信息：坐标、法向、纹理坐标，以及连接关系
+ */
+class CVertex
+{
+public:
+    /*!
+     *  CVertex 默认构造函数
+     */
+    CVertex() { m_halfedge = NULL; m_boundary = false; };
 
-  class CVertex
-  {
-  public:
-	  /*!
-	  CVertex constructor
-	  */
-      CVertex(){ m_halfedge = NULL; m_boundary = false; };
-	  /*!
-	  CVertex destructor 
-	  */
-    ~CVertex(){};
+    /*!
+     *  CVertex 析构函数
+     */
+    ~CVertex() {};
 
-	/*! The point of the vertex
-	*/
-    CPoint & point()    { return m_point;};
-	/*! The normal of the vertex
-	*/
-    CPoint & normal()   { return m_normal; };
-	/*! The texutre coordinates of the vertex
-	*/
-	CPoint2 & uv()       { return m_uv; };
+    /*!
+     *  获取顶点位置坐标
+     *  \return 顶点位置引用
+     */
+    CPoint & point() { return m_point; };
 
-	/*! The most counter clockwise outgoing halfedge of the vertex .
-	*/
+    /*!
+     *  获取顶点法向
+     *  \return 顶点法向引用
+     */
+    CPoint & normal() { return m_normal; };
+
+    /*!
+     *  获取顶点纹理坐标
+     *  \return 纹理坐标(UV)引用
+     */
+    CPoint2 & uv() { return m_uv; };
+
+    /*!
+     *  找顶点最逆时针方向的出半边
+     *  \return 最逆时针出半边指针
+     */
     CHalfEdge * most_ccw_out_halfedge();
-	/*! The most clockwise outgoing halfedge of the vertex .
-	*/
+
+    /*!
+     *  找顶点最顺时针方向的出半边
+     *  \return 最顺时针出半边指针
+     */
     CHalfEdge * most_clw_out_halfedge();
-	/*! The most counter clockwise incoming halfedge of the vertex. 
-	*/
+
+    /*!
+     *  找顶点最逆时针方向的入半边
+     *  \return 最逆时针入半边指针
+     */
     CHalfEdge * most_ccw_in_halfedge();
-	/*! The most clockwise incoming halfedge of the vertex. 
-	*/
+
+    /*!
+     *  找顶点最顺时针方向的入半边
+     *  \return 最顺时针入半边指针
+     */
     CHalfEdge * most_clw_in_halfedge();
 
-	/*! One incoming halfedge of the vertex .
-	*/
+    /*!
+     *  获取/设置顶点的一个入半边（最CCW方向那个）
+     *  \return 半边指针引用，可以用来修改
+     */
     CHalfEdge * & halfedge() { return m_halfedge; };
-	/*! the string of the vertex. 
-	*/
-	std::string & string() { return m_string;};
-	/*! Vertex id. 
-	*/
+
+    /*!
+     *  获取顶点存储的字符串，用来保存扩展属性
+     *  \return 字符串引用
+     */
+    std::string & string() { return m_string; };
+
+    /*!
+     *  获取顶点ID编号
+     *  \return ID编号引用
+     */
     int  & id() { return m_id; };
-	/*! Whether the vertex is on the boundary. 
-	*/
-    bool & boundary() { return m_boundary;};
-    /*! Convert vertex traits to string. 
-	*/
-	void _to_string()   {};
-	/*! Read traits from the string. 
-	*/
-	void _from_string() {};
 
-	/*!	Adjacent edges, temporarily used for loading the mesh
-	 */
-	std::list<CEdge*> & edges() { return m_edges; };
+    /*!
+     *  查询/设置顶点是否在网格边界上
+     *  \return 边界标记引用，true表示顶点在边界，false表示内部顶点
+     */
+    bool & boundary() { return m_boundary; };
 
-  protected:
+    /*!
+     *  把顶点属性转换为字符串，子类可以重写
+     */
+    void _to_string() {};
 
-    /*! Vertex ID. 
-	*/
-    int    m_id ;
-    /*! Vertex position point. 
-	*/
-    CPoint m_point;
-	/*! Normal at the vertex. 
-	*/
-    CPoint m_normal;
-	/*! Texture coordinates of the vertex. 
-	*/
-	CPoint2 m_uv;
-	/*! The most CCW incoming halfedge of the vertex.
-	*/
-    CHalfEdge *     m_halfedge;
-	/*! Indicating if the vertex is on the boundary. 
-	*/
-    bool            m_boundary;
-	/*! The string of the vertex, which stores the traits information. 
-	*/
-	std::string     m_string;
+    /*!
+     *  从字符串读取顶点属性，子类可以重写
+     */
+    void _from_string() {};
 
-	/*! List of adjacent edges, such that current vertex is the end vertex of the edge with smaller id
-	 */
-	std::list<CEdge*> m_edges;
+    /*!
+     *  邻接边列表，加载网格时临时使用
+     *  \return 邻接边列表引用
+     */
+    std::list<CEdge*> & edges() { return m_edges; };
 
-  }; //class CVertex
-
-
-/*! \brief The most counter clockwise incoming halfedge of the vertex
- *  \return the most CCW in halfedge
-*/
-inline CHalfEdge *  CVertex::most_ccw_in_halfedge()  
-{ 
-	//for interior vertex
-	if( !m_boundary )
-	{
-		return m_halfedge; //current half edge is the most ccw in halfedge 
-	}
-
-	//for boundary vertex
-	CHalfEdge * he = m_halfedge->ccw_rotate_about_target();
-	//rotate to the most ccw in halfedge
-	while( he != NULL )
-	{
-		m_halfedge = he;
-		he = m_halfedge->ccw_rotate_about_target();
-	}
-	// the halfedge of the vertex becomes the most ccw in halfedge
-	return m_halfedge;
+protected:
+    int             m_id;         //!< 顶点ID编号
+    CPoint          m_point;      //!< 顶点三维位置坐标
+    CPoint          m_normal;     //!< 顶点法向（单位向量）
+    CPoint2         m_uv;         //!< 二维纹理坐标(UV)
+    CHalfEdge      *m_halfedge;   //!< 最逆时针方向的入半边
+    bool            m_boundary;   //!< 边界标记：true表示顶点在网格边界
+    std::string     m_string;     //!< 存储额外属性的字符串
+    std::list<CEdge*> m_edges;    //!< 邻接边列表，加载网格临时使用
 };
 
-//most clockwise in halfedge
+/*!
+ *  寻找顶点最逆时针方向的入半边
+ *  \return 最逆时针入半边指针
+ *
+ *  对于内部顶点，直接就是存储的m_halfedge，本身已经保持最CCW
+ *  对于边界顶点，旋转直到找到最边缘的那个
+ */
+inline CHalfEdge * CVertex::most_ccw_in_halfedge()
+{
+    // 内部顶点
+    if (!m_boundary)
+    {
+        return m_halfedge; // 当前存储的半边已经就是最CCW入半边
+    }
 
-inline CHalfEdge *  CVertex::most_clw_in_halfedge()  
-{ 
-	//for interior vertex 
-	if( !m_boundary )
-	{
-		return most_ccw_in_halfedge()->ccw_rotate_about_target(); //the most ccw in halfedge rotate ccwly once to get the most clw in halfedge
-	}
-	//for boundary vertex
-	CHalfEdge * he = m_halfedge->clw_rotate_about_target();
-	//rotate to the most clw in halfedge
-	while( he != NULL )
-	{
-		m_halfedge = he;
-		he = m_halfedge->clw_rotate_about_target();
-	}
+    // 边界顶点，不断CCW旋转直到不能再转
+    CHalfEdge * he = m_halfedge->ccw_rotate_about_target();
+    while (he != NULL)
+    {
+        m_halfedge = he;
+        he = m_halfedge->ccw_rotate_about_target();
+    }
+    // 现在m_halfedge就是最CCW的入半边了
+    return m_halfedge;
+}
 
-	return m_halfedge;
-};
+/*!
+ *  寻找顶点最顺时针方向的入半边
+ *  \return 最顺时针入半边指针
+ */
+inline CHalfEdge * CVertex::most_clw_in_halfedge()
+{
+    // 内部顶点：最CCW再转一次CCW就是最CLW
+    if (!m_boundary)
+    {
+        return most_ccw_in_halfedge()->ccw_rotate_about_target();
+    }
 
-//most counter clockwise out halfedge
+    // 边界顶点，不断顺时针旋转直到不能再转
+    CHalfEdge * he = m_halfedge->clw_rotate_about_target();
+    while (he != NULL)
+    {
+        m_halfedge = he;
+        he = m_halfedge->clw_rotate_about_target();
+    }
 
-inline CHalfEdge *  CVertex::most_ccw_out_halfedge()  
-{ 
-	//for interior vertex
-	if( !m_boundary )
-	{
-		return most_ccw_in_halfedge()->he_sym(); //most ccw out halfedge is the dual of the most ccw in halfedge
-	}
+    return m_halfedge;
+}
 
-	//for boundary vertex
-	CHalfEdge * he = m_halfedge->he_next();
-	//get the out halfedge which is the next halfedge of the most ccw in halfedge
-	CHalfEdge * ne = he->ccw_rotate_about_source();
-	//rotate ccwly around the source vertex
-	while( ne != NULL )
-	{
-		he = ne;
-		ne = he->ccw_rotate_about_source();
-	}
+/*!
+ *  寻找顶点最逆时针方向的出半边
+ *  \return 最逆时针出半边指针
+ */
+inline CHalfEdge * CVertex::most_ccw_out_halfedge()
+{
+    // 内部顶点：最CCW入半边的对称就是最CCW出半边
+    if (!m_boundary)
+    {
+        return most_ccw_in_halfedge()->he_sym();
+    }
 
-	return he;
-};
+    // 边界顶点，从边界开始找，不断绕源点旋转CCW直到结束
+    CHalfEdge * he = m_halfedge->he_next();
+    CHalfEdge * ne = he->ccw_rotate_about_source();
 
-//most clockwise out halfedge
+    while (ne != NULL)
+    {
+        he = ne;
+        ne = he->ccw_rotate_about_source();
+    }
 
-inline CHalfEdge * CVertex::most_clw_out_halfedge()  
-{ 
-	//for interior vertex
-	if( !m_boundary )
-	{
-		return most_ccw_out_halfedge()->ccw_rotate_about_source();  //most ccw out halfedge rotate ccwly once about the source
-	}
-	//get one out halfedge
-	CHalfEdge * he = m_halfedge->he_next();
-	//rotate the out halfedge clwly about the source
-	CHalfEdge * ne = he->clw_rotate_about_source();
-	
-	while( ne != NULL )
-	{
-		he = ne;
-		ne = he->clw_rotate_about_source();
-	}
+    return he;
+}
 
-	return he;
-};
+/*!
+ *  寻找顶点最顺时针方向的出半边
+ *  \return 最顺时针出半边指针
+ */
+inline CHalfEdge * CVertex::most_clw_out_halfedge()
+{
+    // 内部顶点：最CCW出半边再转一次CCW就是最CLW
+    if (!m_boundary)
+    {
+        return most_ccw_out_halfedge()->ccw_rotate_about_source();
+    }
 
+    // 边界顶点，不断顺时针绕源点旋转直到结束
+    CHalfEdge * he = m_halfedge->he_next();
+    CHalfEdge * ne = he->clw_rotate_about_source();
 
+    while (ne != NULL)
+    {
+        he = ne;
+        ne = he->clw_rotate_about_source();
+    }
 
-}//name space MeshLib
+    return he;
+}
 
-#endif //_MESHLIB_VERTEX_H_defined
+} // namespace MeshLib
+
+#endif //_MESHLIB_VERTEX_H_
