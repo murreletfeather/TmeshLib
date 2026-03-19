@@ -9,7 +9,7 @@
 #ifndef _QUAT_H_
 #define _QUAT_H_
 
-#include <math.h>
+#include <cmath>
 #include "Point.h"
 
 // 4x4矩阵类型声明，用于输出OpenGL旋转矩阵
@@ -119,7 +119,7 @@ public:
      *
      *  转换后的矩阵可以直接传给glLoadMatrixd或者给着色器用
      */
-    void convert( double * m)
+    void convert( double * m) const
     {
         CQuat q = *this;
         double l = q.dot(q);
