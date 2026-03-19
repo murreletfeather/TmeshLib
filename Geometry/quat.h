@@ -91,7 +91,11 @@ public:
     CQuat& pow(double p)
     {
         normalize();
-        double theta = 2 * acos( m_w );
+        // 浮点数精度修正：acos要求输入必须[-1,1]，精度误差可能让m_w稍微超出边界
+        double clamped_w = m_w;
+        if (clamped_w > 1.0) clamped_w = 1.0;
+        if (clamped_w < -1.0) clamped_w = -1.0;
+        double theta = 2 * acos( clamped_w );
         if( theta < 1e-10 ) return (*this);
 
         CPoint axis( m_x, m_y, m_z );
@@ -263,7 +267,11 @@ inline CQuat pow(const CQuat & r, double p)
 {
     CQuat q = r;
     q.normalize();
-    double theta = 2 * acos( q.m_w );
+    // 浮点数精度修正：acos要求输入必须[-1,1]，精度误差可能让m_w稍微超出边界
+    double clamped_w = q.m_w;
+    if (clamped_w > 1.0) clamped_w = 1.0;
+    if (clamped_w < -1.0) clamped_w = -1.0;
+    double theta = 2 * acos( clamped_w );
     if( theta < 1e-10 ) return q;
 
     CPoint axis( q.m_x, q.m_y, q.m_z );
