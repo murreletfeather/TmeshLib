@@ -1,194 +1,178 @@
 /*!
 *      \file Iterators.h
-*      \brief Iterators for accessing geometric objects on a mesh
+*      \brief 网格迭代器，遍历网格中不同几何元素
 *	   \author David Gu
 *      \date 10/07/2010
-*
+*      \details 提供各种迭代器，方便按顺序遍历网格中元素：比如遍历顶点邻接元素、面上的半边/顶点/边，遍历整个网格所有顶点/边/面/半边
 */
- 
+
 #ifndef  _ITERATORS_H_
 #define  _ITERATORS_H_
 
+#include <list>
+#include <cassert>
 #include "BaseMesh.h"
 
 namespace MeshLib{
 
-
-//v->out halfedge
 /*!
-	\brief VertexOutHalfedgeIterator, transverse all the outgoing halfedges of a vertex ccwly.
-*/
+ * \class VertexOutHalfedgeIterator
+ * \brief 顶点出半边迭代器，按逆时针(CCW)顺序遍历顶点所有出半边
+ * 
+ * 从最顺时针(CLW)半边开始，一步步逆时针旋转，遍历顶点所有 outgoing 半边
+ */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 class VertexOutHalfedgeIterator
 {
 public:
-	/*!
-	VertexOutHalfedgeIteartor constructor
-	\param pMesh pointer to the current mesh
-	\param v     pointer to the current vertex
-	*/
+    /*!
+     * @brief 构造函数
+     * @param pMesh 网格指针
+     * @param v 目标顶点指针，要遍历它的所有出半边
+     */
 	VertexOutHalfedgeIterator( CBaseMesh<CVertex, CEdge, CFace, CHalfEdge> *  pMesh, CVertex *  v )
-	{ m_pMesh = pMesh; m_vertex = v; m_halfedge = m_pMesh->vertexMostClwOutHalfEdge(v); };
+	{ 
+        m_pMesh = pMesh; 
+        m_vertex = v; 
+        m_halfedge = m_pMesh->vertexMostClwOutHalfEdge(v); 
+	};
 
-	/*!
-	VertexOutHalfedgeIterator destructor
-	*/
+    /*! @brief 析构函数 */
 	~VertexOutHalfedgeIterator(){};
-	/*!
-	prefix ++ operator, goes to the next ccw vertex out halfedge
-	*/
-	void operator++() //prefix
-	{assert( m_halfedge != NULL ); 
-	 if( m_halfedge == m_pMesh->vertexMostCcwOutHalfEdge(m_vertex) ) 
-		 m_halfedge = NULL;
-	 else
-	 	 m_halfedge = m_pMesh->vertexNextCcwOutHalfEdge(m_halfedge); };
+	
+    /*!
+     * @brief 前缀++，跳到下一个逆时针出半边
+     */
+	void operator++() //前缀形式
+	{
+        assert( m_halfedge != NULL ); 
+	    if( m_halfedge == m_pMesh->vertexMostCcwOutHalfEdge(m_vertex) ) 
+		     m_halfedge = NULL;
+	    else
+	 	     m_halfedge = m_pMesh->vertexNextCcwOutHalfEdge(m_halfedge); 
+	};
 
-	/*!
-		postfix ++ operator, goes to the next ccw vertex out halfedge
-	*/
-	void operator++(int) //postfix
-	{assert( m_halfedge != NULL ); 
-	 if( m_halfedge == m_pMesh->vertexMostCcwOutHalfEdge(m_vertex) ) 
-		 m_halfedge = NULL;
-	 else
-	 	 m_halfedge = m_pMesh->vertexNextCcwOutHalfEdge(m_halfedge); };
+    /*!
+     * @brief 后缀++，跳到下一个逆时针出半边
+     */
+	void operator++(int) //后缀形式
+	{
+        assert( m_halfedge != NULL ); 
+	    if( m_halfedge == m_pMesh->vertexMostCcwOutHalfEdge(m_vertex) ) 
+		     m_halfedge = NULL;
+	    else
+	 	     m_halfedge = m_pMesh->vertexNextCcwOutHalfEdge(m_halfedge); 
+	};
 
-	/*!
-		The current halfedge the iterator pointing to.
-	*/
-
+    /*!
+     * @brief 获取当前迭代器指向的半边
+     * @return 当前半边指针
+     */
 	 CHalfEdge * value() { return m_halfedge; };
-	 /*!
-		whether all the out halfedges have been visited.
-	 */
+	 
+    /*!
+     * @brief 判断是否遍历完毕
+     * @return true表示已经遍历完所有半边，false表示还有
+     */
 	 bool end(){ return m_halfedge == NULL; };
-	/*!
-		The current halfedge the iterator pointing to.
-	*/
+	 
+    /*!
+     * @brief 重载*运算符，获取当前半边，和value()等价
+     * @return 当前半边指针
+     */
 	 CHalfEdge * operator*() { return value(); };
 
 private:
-	/*!	
-		Current mesh.
-	*/
-	CBaseMesh<CVertex,CEdge,CFace,CHalfEdge> *        m_pMesh;
-	/*!
-		Current vertex.
-	*/
-	CVertex *      m_vertex;
-	/*!
-		Current halfedge.
-	*/
-	CHalfEdge * m_halfedge;
+	CBaseMesh<CVertex,CEdge,CFace,CHalfEdge> *        m_pMesh;    //!< 当前网格指针
+	CVertex *                                         m_vertex;   //!< 当前目标顶点
+	CHalfEdge *                                       m_halfedge; //!< 当前迭代指向的半边
 };
 
-//v->in halfedge
 /*!
-	\brief VertexInHalfedgeIterator, transverse all the incoming halfedges of a vertex ccwly.
-*/
+ * \class VertexInHalfedgeIterator
+ * \brief 顶点入半边迭代器，按逆时针(CCW)顺序遍历顶点所有入半边
+ */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 class VertexInHalfedgeIterator
 {
 public:
-	/*!
-	VertexInHalfedgeIteartor constructor
-	\param pMesh pointer to the current mesh
-	\param v     pointer to the current vertex
-	*/
+    /*!
+     * @brief 构造函数
+     * @param pMesh 网格指针
+     * @param v 目标顶点指针，要遍历它的所有入半边
+     */
 	VertexInHalfedgeIterator(CBaseMesh<CVertex, CEdge, CFace, CHalfEdge> *  pMesh, CVertex * v )
-	{ m_pMesh = pMesh; m_vertex = v; m_halfedge = m_pMesh->vertexMostClwInHalfEdge(v); };
-	/*!
-	VertexInHalfedgeIterator destructor
-	*/
+	{ 
+        m_pMesh = pMesh; 
+        m_vertex = v; 
+        m_halfedge = m_pMesh->vertexMostClwInHalfEdge(v); 
+	};
+	
+    /*! @brief 析构函数 */
 	~VertexInHalfedgeIterator(){};
 
-	/*!
-	prefix ++ operator, goes to the next ccw vertex in halfedge
-	*/
-		void operator++()	//prefix
+    /*! @brief 前缀++，跳到下一个逆时针入半边 */
+	void operator++()	//前缀形式
 	{
-	 assert( m_halfedge != NULL ); 
-	 if( m_halfedge == m_pMesh->vertexMostCcwInHalfEdge(m_vertex) ) 
-		 m_halfedge = NULL; 
-	 else
-		m_halfedge = m_pMesh->vertexNextCcwInHalfEdge(m_halfedge); 
+        assert( m_halfedge != NULL ); 
+	    if( m_halfedge == m_pMesh->vertexMostCcwInHalfEdge(m_vertex) ) 
+		     m_halfedge = NULL; 
+	    else
+		    m_halfedge = m_pMesh->vertexNextCcwInHalfEdge(m_halfedge); 
 	};
-	/*!
-	postfix ++ operator, goes to the next ccw vertex in halfedge
-	*/
 	
-	void operator++(int)	//postfix
+    /*! @brief 后缀++，跳到下一个逆时针入半边 */
+	void operator++(int)	//后缀形式
 	{
-	 assert( m_halfedge != NULL ); 
-	 if( m_halfedge == m_pMesh->vertexMostCcwInHalfEdge(m_vertex) ) 
-		 m_halfedge = NULL; 
-	 else
-		m_halfedge = m_pMesh->vertexNextCcwInHalfEdge(m_halfedge); 
+        assert( m_halfedge != NULL ); 
+	    if( m_halfedge == m_pMesh->vertexMostCcwInHalfEdge(m_vertex) ) 
+		     m_halfedge = NULL; 
+	    else
+		    m_halfedge = m_pMesh->vertexNextCcwInHalfEdge(m_halfedge); 
 	};
-	/*!
-		The current halfedge the iterator pointing to.
-	*/
-	
+
+    /*! @brief 获取当前半边 */
 	CHalfEdge * value() { return m_halfedge; };
-	/*!	
-		Indicate whether all the in halfedges of the vertex have been transversed.
-	*/
-	 bool end(){ return m_halfedge == NULL; };
-	 /*!
-		The current halfedge the iterator pointing to.
-	 */
-	 CHalfEdge * operator*() { return value(); };
+	
+    /*! @brief 判断是否遍历完毕 */
+	bool end(){ return m_halfedge == NULL; };
+	
+    /*! @brief 重载*运算符获取当前半边 */
+	CHalfEdge * operator*() { return value(); };
 
 private:
-	/*!
-		Current mesh.
-	*/
-	CBaseMesh<CVertex, CEdge, CFace, CHalfEdge> *        m_pMesh;
-	/*!
-		Current vertex.
-	*/
-	CVertex *      m_vertex;
-	/*!
-		Current halfedge.
-	*/
-	CHalfEdge * m_halfedge;
+	CBaseMesh<CVertex, CEdge, CFace, CHalfEdge> *        m_pMesh;    //!< 当前网格指针
+	CVertex *                                         m_vertex;   //!< 当前目标顶点
+	CHalfEdge *                                       m_halfedge; //!< 当前迭代指向的半边
 };
 
-
-//v -> v
-
 /*!
-	\brief VertexVertexIterator, transverse all the neighboring vertices of a vertex ccwly.
-*/
+ * \class VertexVertexIterator
+ * \brief 顶点邻接顶点迭代器，按逆时针(CCW)顺序遍历顶点所有邻接顶点（一圈邻居）
+ */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 class VertexVertexIterator
 {
 public:
-	/*!
-		VertexVertexIterator constructor
-		\param v the current vertex
-	*/
+    /*!
+     * @brief 构造函数
+     * @param v 目标顶点指针，要遍历它的邻接顶点
+     */
 	VertexVertexIterator( CVertex *  v )
 	{ 
 		m_vertex = v; 
 		m_halfedge = (CHalfEdge*)m_vertex->most_clw_out_halfedge();
 	};
 
-	/*!
-		VertexVertexIterator destructor
-	*/
+    /*! @brief 析构函数 */
 	~VertexVertexIterator(){};
 
-	/*!
-		VertexVertexIterator prefix operator ++, goes to the next neighboring vertex CCWly
-	*/
-
-	void operator++() //prefix
+    /*! @brief 前缀++，跳到下一个逆时针邻接顶点 */
+	void operator++() //前缀形式
 	{
 		assert( m_halfedge != NULL ); 
 		
-		if( !m_vertex->boundary() )
+		if( !m_vertex->boundary() ) // 如果顶点不在边界上（内部顶点）
 		{
 			if( m_halfedge != m_vertex->most_ccw_out_halfedge() )
 			{
@@ -201,6 +185,7 @@ public:
 			return;
 		}
 
+		// 如果顶点在边界上，边界顶点需要特殊处理
 		if( m_vertex->boundary() )
 		{
 			if( m_halfedge == (CHalfEdge*)m_vertex->most_ccw_in_halfedge() )
@@ -225,10 +210,8 @@ public:
 	};
 
 
-	/*!
-		VertexVertexIterator postfix operator ++, goes to the next neighboring vertex CCWly
-	*/
-	void operator++(int) //postfix
+    /*! @brief 后缀++，跳到下一个逆时针邻接顶点 */
+	void operator++(int) //后缀形式
 	{
 		assert( m_halfedge != NULL ); 
 		
@@ -268,22 +251,21 @@ public:
 		return;
 	};
 
-	/*!
-		The neighboring vertex, pointed by the current iterator
-	*/
-
+    /*!
+     * @brief 获取当前邻接顶点
+     * @return 当前相邻顶点指针
+     */
 	 CVertex * value() 
 	 { 
 		 if( !m_vertex->boundary() )
 		 {
 			 return (CVertex*)m_halfedge->target(); 
 		 }
-
+		 // 边界顶点特殊处理
 		 if( m_halfedge != (CHalfEdge*)m_vertex->most_ccw_in_halfedge() )
 		 {
 			 return (CVertex*)m_halfedge->target();
 		 }
-
 		 if( m_halfedge == (CHalfEdge*)m_vertex->most_ccw_in_halfedge() )
 		 {
 			 return (CVertex*)m_halfedge->source();
@@ -291,61 +273,43 @@ public:
 		 return NULL;
 	 };
 
-	/*!
-		The neighboring vertex, pointed by the current iterator
-	*/
+    /*! @brief 重载*运算符获取当前邻接顶点 */
 	 CVertex * operator*() { return value(); };
 
-	/*!
-		Indicate whether all the neighboring vertices have been accessed.
-	*/
+    /*! @brief 判断遍历是否结束 */
 	 bool end(){ return m_halfedge == NULL; };
 
-	/*!
-		Reset the iterator.
-	*/
+    /*! @brief 重置迭代器回到起始点 */
 	 void reset()	{ m_halfedge = (CHalfEdge*)m_vertex->most_clw_out_halfedge(); };
 
 private:
-	/*!
-		Current vertex
-	*/
-	CVertex *   m_vertex;
-	/*!	
-		Current halfedge.
-	*/
-	CHalfEdge * m_halfedge;
+	CVertex *   m_vertex;      //!< 目标顶点，我们遍历它的邻接点
+	CHalfEdge * m_halfedge;    //!< 当前迭代指向的半边
 };
 
-
-//v -> edge
 /*!
-	\brief VertexEdgeIterator, transverse all the neighboring edges of a vertex ccwly.
-*/
-
+ * \class VertexEdgeIterator
+ * \brief 顶点邻接边迭代器，按逆时针(CCW)顺序遍历顶点所有邻接边
+ */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 class VertexEdgeIterator
 {
 public:
-	/*!
-		VertexEdgeIterator constructor
-		\param v the current vertex
-	*/
+    /*!
+     * @brief 构造函数
+     * @param v 目标顶点指针，遍历它邻接的所有边
+     */
 	VertexEdgeIterator( CVertex *  v )
 	{ 
 		m_vertex = v; 
 		m_halfedge = (CHalfEdge*)m_vertex->most_clw_out_halfedge();
 	};
 
-	/*!
-		VertexVertexIterator destructor
-	*/
+    /*! @brief 析构函数 */
 	~VertexEdgeIterator(){};
-/*!
-		VertexVertexIterator prefix operator ++, goes to the next neighboring vertex CCWly
-	*/
-
-	void operator++() //prefix
+	
+    /*! @brief 前缀++，跳到下一个逆时针邻接边 */
+	void operator++() //前缀形式
 	{
 		assert( m_halfedge != NULL ); 
 		
@@ -384,10 +348,9 @@ public:
 
 		return;
 	};
-	/*!
-		VertexVertexIterator postfix operator ++, goes to the next neighboring vertex CCWly
-	*/
-	void operator++(int) //postfix
+	
+    /*! @brief 后缀++，跳到下一个逆时针邻接边 */
+	void operator++(int) //后缀形式
 	{
 		assert( m_halfedge != NULL ); 
 		
@@ -426,65 +389,51 @@ public:
 
 		return;
 	};
-	/*!
-		The neighboring edge, pointed by the current iterator
-	*/
-
+	
+    /*! @brief 获取当前边指针 */
 	 CEdge * value() 
 	 { 
 		 assert( m_halfedge != NULL );
 		 return (CEdge*)m_halfedge->edge();
 	 };
 
-	/*!
-		The neighboring edge, pointed by the current iterator
-	*/
+    /*! @brief 重载*运算符获取当前边 */
 	 CEdge * operator*() { return value(); };
-	/*!
-		Indicate whether all the neighboring edges have been accessed.
-	*/
+	 
+    /*! @brief 判断遍历是否结束 */
 	 bool end(){ return m_halfedge == NULL; };
-	/*!
-		Reset the VerexEdgeIterator.
-	*/
+	 
+    /*! @brief 重置迭代器回到起始点 */
 	 void reset()	{ m_halfedge = (CHalfEdge*)m_vertex->most_clw_out_halfedge(); };
 
 private:
-	/*! current vertex 
-	*/
-	CVertex *   m_vertex;
-	/*! current halfedge
-	*/
-	CHalfEdge * m_halfedge;
+	CVertex *   m_vertex;   //!< 目标顶点，遍历它的邻接边
+	CHalfEdge * m_halfedge; //!< 当前迭代指向的半边
 };
 
-
-
-// v->face
 /*!
-	\brief VertexFaceIterator, transverse all the neighboring faces of a vertex ccwly.
-*/
+ * \class VertexFaceIterator
+ * \brief 顶点邻接面迭代器，按逆时针(CCW)顺序遍历顶点所有邻接面
+ */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 class VertexFaceIterator
 {
 public:
-	/*!
-		VertexFaceIterator constructor
-		\param v the current vertex
-	*/
+    /*!
+     * @brief 构造函数
+     * @param v 目标顶点指针，遍历它所有邻接面
+     */
 	VertexFaceIterator( CVertex * & v )
 	{ 
 		m_vertex = v; 
 		m_halfedge = (CHalfEdge*)m_vertex->most_clw_out_halfedge(); 
 	};
-	/*!
-		VertexFaceIterator destructor
-	*/
+	
+    /*! @brief 析构函数 */
 	~VertexFaceIterator(){};
-	/*!
-		VertexFaceIterator prefix operator ++, goes to the next neighboring face CCWly
-	*/
-	void operator++() //prefix
+	
+    /*! @brief 前缀++，跳到下一个逆时针邻接面 */
+	void operator++() //前缀形式
 	{
 		assert( m_halfedge != NULL );  
 
@@ -495,11 +444,9 @@ public:
 		}
 		m_halfedge = (CHalfEdge*)m_halfedge->ccw_rotate_about_source();
 	};
-	/*!
-		VertexFaceIterator prefix operator ++, goes to the next neighboring face CCWly
-	*/
-
-	void operator++(int) //postfix
+	
+    /*! @brief 后缀++，跳到下一个逆时针邻接面 */
+	void operator++(int) //后缀形式
 	{
 		assert( m_halfedge != NULL );  
 
@@ -510,60 +457,47 @@ public:
 		}
 		m_halfedge = (CHalfEdge*)m_halfedge->ccw_rotate_about_source();
 	};
-	/*!
-		The neighboring face, pointed by the current iterator
-	*/
+	
+    /*! @brief 获取当前邻接面 */
 	CFace * value() { return (CFace*) m_halfedge->face(); };
-	/*!
-		The neighboring face, pointed by the current iterator
-	*/
+	
+    /*! @brief 重载*运算符获取当前邻接面 */
 	 CFace * operator*() { return value(); };
-	/*!
-		Indicate whether all the neighboring faces have been accessed.
-	*/
+	 
+    /*! @brief 判断遍历是否结束 */
 	 bool end(){ return m_halfedge == NULL; };
-	 /*!
-	 Reset the VertexFaceIterator
-	 */
+	 
+    /*! @brief 重置迭代器回到起始位置 */
 	 void reset()	{ m_halfedge = (CHalfEdge*)m_vertex->most_clw_out_halfedge(); };
 
 private:
-	/*!
-	current vertex
-	*/
-	CVertex *   m_vertex;
-	/*!
-	current halfedge
-	*/
-	CHalfEdge * m_halfedge;
+	CVertex *   m_vertex;   //!< 目标顶点，遍历它的邻接面
+	CHalfEdge * m_halfedge; //!< 当前迭代指向的半边
 };
 
-// f -> halfedge
 /*!
-	\brief FaceHalfedgeIterator, transverse all the halfedges of a face CCWly.
-*/
-
+ * \class FaceHalfedgeIterator
+ * \brief 面半边迭代器，按逆时针(CCW)顺序遍历面边界所有半边
+ */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 class FaceHalfedgeIterator
 {
 public:
-	/*!
-		FaceHalfedgeIterator constructor
-		\param f the current face
-	*/
+    /*!
+     * @brief 构造函数
+     * @param f 目标面对象指针，遍历它边界上所有半边
+     */
 	FaceHalfedgeIterator( CFace * f )
 	{ 
 		m_face = f; 
 		m_halfedge = (CHalfEdge*)f->halfedge(); 
 	};
-	/*!
-		FaceHalfedgeIterator destructor
-	*/
+	
+    /*! @brief 析构函数 */
 	~FaceHalfedgeIterator(){};
-	/*!
-		VertexVertexIterator prefix operator ++, goes to the next halfedge CCWly
-	*/
-	void operator++() //prefix
+	
+    /*! @brief 前缀++，跳到下一个逆时针半边 */
+	void operator++() //前缀形式
 	{
 		assert( m_halfedge != NULL );
 		m_halfedge = (CHalfEdge*)m_halfedge->he_next();
@@ -575,10 +509,8 @@ public:
 		};
 	}
 
-	/*!
-		VertexVertexIterator prefix operator ++, goes to the next halfedge CCWly
-	*/
-	void operator++(int) //postfix
+    /*! @brief 后缀++，跳到下一个逆时针半边 */
+	void operator++(int) //后缀形式
 	{
 		assert( m_halfedge != NULL );
 		m_halfedge = (CHalfEdge*)m_halfedge->he_next();
@@ -590,58 +522,44 @@ public:
 		};
 	}
 
-	/*!
-		The halfedge, pointed by the current iterator
-	*/
+    /*! @brief 获取当前半边指针 */
 	CHalfEdge * value() { return m_halfedge; };
-	/*!
-		The halfedge, pointed by the current iterator
-	*/
+	
+    /*! @brief 重载*运算符获取当前半边 */
 	CHalfEdge * operator*() { return value(); };
 
-	/*!
-		Indicate whether all the halfedges have been accessed.
-	*/
+    /*! @brief 判断是否遍历完毕 */
 	bool end(){ return m_halfedge == NULL; };
 
 private:
-	/*!
-		current face
-	*/
-	CFace *        m_face;
-	/*!
-		current halfedge
-	*/
-	CHalfEdge * m_halfedge;
+	CFace *        m_face;     //!< 目标面，遍历它的边界半边
+	CHalfEdge *    m_halfedge; //!< 当前迭代指向的半边
 };
 
 
-// f -> edge
 /*!
-	\brief FaceEdgeIterator, transverse all the edges of a face CCWly.
-*/
+ * \class FaceEdgeIterator
+ * \brief 面边迭代器，按逆时针(CCW)顺序遍历面边界所有边
+ */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 class FaceEdgeIterator
 {
 public:
-	/*!
-		FaceEdgeIterator constructor
-		\param f the current face
-	*/	
+    /*!
+     * @brief 构造函数
+     * @param f 目标面对象指针，遍历它边界上所有边
+     */
 	FaceEdgeIterator( CFace * f )
 	{ 
 		m_face = f; 
 		m_halfedge = (CHalfEdge*)f->halfedge(); 
 	};
 
-	/*!
-		FaceEdgeIterator destructor
-	*/	
+    /*! @brief 析构函数 */
 	~FaceEdgeIterator(){};
-	/*!
-		FaceEdgeIterator prefix operator ++, goes to the next edge CCWly
-	*/
-	void operator++()	//prefix
+	
+    /*! @brief 前缀++，跳到下一个逆时针边 */
+	void operator++()	//前缀形式
 	{
 		assert( m_halfedge != NULL );
 		m_halfedge = (CHalfEdge*)m_halfedge->he_next();
@@ -653,10 +571,8 @@ public:
 		};
 	}
 
-	/*!
-		FaceEdgeIterator prefix operator ++, goes to the next edge CCWly
-	*/
-	void operator++(int)	//postfix
+    /*! @brief 后缀++，跳到下一个逆时针边 */
+	void operator++(int)	//后缀形式
 	{
 		assert( m_halfedge != NULL );
 		m_halfedge = (CHalfEdge*)m_halfedge->he_next();
@@ -667,53 +583,45 @@ public:
 			return;
 		};
 	}
-	/*!
-		The edge, pointed by the current iterator
-	*/
+	
+    /*! @brief 获取当前边指针 */
 	CEdge * value() { return (CEdge*) m_halfedge->edge(); };
-	/*!
-		The edge, pointed by the current iterator
-	*/
+	
+    /*! @brief 重载*运算符获取当前边 */
 	CEdge * operator*() { return value(); };
-	/*!
-		Indicate whether all the edges have been transversed.
-	*/
+	
+    /*! @brief 判断是否遍历完毕 */
 	bool end(){ return m_halfedge == NULL; };
 
 private:
-	/*! Current face. */
-	CFace  *       m_face;
-	/*! Current halfedge. */
-	CHalfEdge * m_halfedge;
+	CFace  *       m_face;     //!< 目标面，遍历它的边界边
+	CHalfEdge *    m_halfedge; //!< 当前迭代指向的半边
 };
 
 
-// f -> vertex
 /*!
-	\brief FaceVertexIterator, transverse all the vertices of a face CCWly.
-*/
+ * \class FaceVertexIterator
+ * \brief 面顶点迭代器，按逆时针(CCW)顺序遍历面边界所有顶点
+ */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 class FaceVertexIterator
 {
 public:
-	/*!
-		FaceVertexIterator constructor
-		\param f the current face
-	*/
+    /*!
+     * @brief 构造函数
+     * @param f 目标面对象指针，遍历它边界上所有顶点
+     */
 	FaceVertexIterator( CFace * f )
 	{ 
 		m_face = f; 
 		m_halfedge = (CHalfEdge*)f->halfedge(); 
 	};
-	/*!
-		FaceVertexIterator destructor
-	*/
 	
+    /*! @brief 析构函数 */
 	~FaceVertexIterator(){};
-	/*!
-		FaceVertexIterator prefix operator ++, goes to the next vertex CCWly
-	*/
-	void operator++() //prefix
+	
+    /*! @brief 前缀++，跳到下一个逆时针顶点 */
+	void operator++() //前缀形式
 	{
 		assert( m_halfedge != NULL );
 		m_halfedge = (CHalfEdge*)m_halfedge->he_next();
@@ -725,10 +633,8 @@ public:
 		};
 	}
 
-	/*!
-		FaceVertexIterator prefix operator ++, goes to the next vertex CCWly
-	*/
-	void operator++(int) //postfix
+    /*! @brief 后缀++，跳到下一个逆时针顶点 */
+	void operator++(int) //后缀形式
 	{
 		assert( m_halfedge != NULL );
 		m_halfedge = (CHalfEdge*)m_halfedge->he_next();
@@ -739,277 +645,223 @@ public:
 			return;
 		};
 	}
-	/*!
-		The vertex, pointed by the current iterator
-	*/
+	
+    /*! @brief 获取当前顶点指针 */
 	CVertex * value() { return (CVertex*) m_halfedge->target(); };
-	/*!
-		The vertex, pointed by the current iterator
-	*/
+	
+    /*! @brief 重载*运算符获取当前顶点 */
 	CVertex * operator*() { return value(); };
-	/*!
-		Indicate whether all the vertices have been accessed.
-	*/
+	
+    /*! @brief 判断是否遍历完毕 */
 	bool end(){ return m_halfedge == NULL; };
 
 private:
-	/*!	Current face.
-	*/
-	CFace         * m_face;
-	/*!	Current halfedge.
-	*/
-	CHalfEdge * m_halfedge;
+	CFace         * m_face;     //!< 目标面，遍历它的边界顶点
+	CHalfEdge *    m_halfedge; //!< 当前迭代指向的半边
 };
 
-
-// mesh->v
 /*!
-	\brief MeshVertexIterator, transverse all the vertices in the mesh.
-*/
-
+ * \class MeshVertexIterator
+ * \brief 网格顶点迭代器，遍历整个网格所有顶点
+ */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 class MeshVertexIterator
 {
 public:
-	/*!
-	MeshVertexIterator constructor, 
-	\param pMesh the current mesh
-	*/
+    /*!
+     * @brief 构造函数
+     * @param pMesh 目标网格指针，遍历它所有顶点
+     */
 	MeshVertexIterator( CBaseMesh<CVertex,CEdge,CFace,CHalfEdge> * pMesh )
 	{
 		m_pMesh = pMesh;
 		m_iter = m_pMesh->vertices().begin();
 	}
-	/*!
-	The vertex, pointed by the current iterator
-	*/
+	
+    /*! @brief 获取当前顶点 */
 	CVertex * value() { return *m_iter; };
-	/*!
-	The vertex, pointed by the current iterator
-	*/
-		
+	
+    /*! @brief 重载*运算符获取当前顶点 */
 	CVertex * operator*(){ return value(); };
-	/*!
-		MeshVertexIterator prefix operator ++, goes to the next vertex 
-	*/	
-	void operator++()	 { ++ m_iter; }; //prefix
-	/*!
-		MeshVertexIterator prefix operator ++, goes to the next vertex 
-	*/	
-	void operator++(int) { ++ m_iter; }; //postfix
-	/*!
-		Indicate whether all the vertices have been accessed.
-	*/
+	
+    /*! @brief 前缀++，跳到下一个顶点 */	
+	void operator++()	 { ++ m_iter; }; //前缀形式
+	
+    /*! @brief 后缀++，跳到下一个顶点 */
+	void operator++(int) { ++ m_iter; }; //后缀形式
+	
+    /*! @brief 判断是否遍历完所有顶点 */
 	bool end() { return m_iter == m_pMesh->vertices().end(); }
 	
 private:
-	/*!
-		Current mesh.
-	*/
-	CBaseMesh<CVertex,CEdge,CFace,CHalfEdge> * m_pMesh;
-	/*! 
-	Current vertex list iterator.
-	*/
-	typename std::list<CVertex*>::iterator m_iter;
+	CBaseMesh<CVertex,CEdge,CFace,CHalfEdge> *        m_pMesh; //!< 目标网格，遍历它的所有顶点
+	typename std::list<CVertex*>::iterator             m_iter;  //!< std::list迭代器，封装内部遍历
 };
 
-// mesh->f
 /*!
-	\brief MeshFaceIterator, transverse all the faces in the mesh.
-*/
+ * \class MeshFaceIterator
+ * \brief 网格面对迭代器，遍历整个网格所有面
+ */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 class MeshFaceIterator
 {
 public:
-	/*!
-	MeshFaceIterator constructor, 
-	\param pMesh the current mesh
-	*/
+    /*!
+     * @brief 构造函数
+     * @param pMesh 目标网格指针，遍历它所有面
+     */
 	MeshFaceIterator( CBaseMesh<CVertex,CEdge,CFace,CHalfEdge> * pMesh )
 	{
-      m_pMesh = pMesh;
-      m_iter = pMesh->faces().begin();
+        m_pMesh = pMesh;
+        m_iter = pMesh->faces().begin();
 	}
-	/*!
-	The face, pointed by the current iterator
-	*/
+	
+    /*! @brief 获取当前面 */
 	CFace * value() { return *m_iter; };
-	/*!
-	The face, pointed by the current iterator
-	*/
+	
+    /*! @brief 重载*运算符获取当前面 */
 	CFace * operator*(){ return value(); };
 
-	/*!
-		MeshFaceIterator prefix operator ++, goes to the next vertex 
-	*/
-	void operator++() { ++ m_iter; }; //prefix
-	/*!
-		MeshFaceIterator postfix operator ++, goes to the next vertex 
-	*/
-	void operator++(int) { ++ m_iter; }; //postfix
-	/*!
-		Indicate whether all the faces have been accessed.
-	*/
+    /*! @brief 前缀++，跳到下一个面 */
+	void operator++() { ++ m_iter; }; //前缀形式
+	
+    /*! @brief 后缀++，跳到下一个面 */
+	void operator++(int) { ++ m_iter; }; //后缀形式
+	
+    /*! @brief 判断是否遍历完所有面 */
 	bool end() { return m_iter == m_pMesh->faces().end(); }
 
 private:
-	/*! Current mesh.
-	*/
-	CBaseMesh<CVertex,CEdge,CFace,CHalfEdge> * m_pMesh;
-	/*! Current face list iterator.
-	*/
-	typename std::list<CFace*>::iterator  m_iter;
+	CBaseMesh<CVertex,CEdge,CFace,CHalfEdge> *        m_pMesh; //!< 目标网格，遍历它的所有面
+	typename std::list<CFace*>::iterator               m_iter;  //!< std::list迭代器，封装内部遍历
 };
 
-//Mesh->e
 /*!
-	\brief MeshEdgeIterator, transverse all the edges in the mesh.
-*/
+ * \class MeshEdgeIterator
+ * \brief 网格边迭代器，遍历整个网格所有边
+ */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 class MeshEdgeIterator
 {
 public:
-	/*!
-	MeshEdgeIterator constructor, 
-	\param pMesh the current mesh
-	*/	
+    /*!
+     * @brief 构造函数
+     * @param pMesh 目标网格指针，遍历它所有边
+     */
 	MeshEdgeIterator( CBaseMesh<CVertex,CEdge,CFace,CHalfEdge> * pMesh )
 	{
 		m_pMesh = pMesh;
 		m_iter = m_pMesh->edges().begin();
 	}
-	/*!
-	The edge, pointed by the current iterator
-	*/	
+	
+    /*! @brief 获取当前边 */
 	CEdge * value() { return *m_iter; };
-	/*!
-	The edge, pointed by the current iterator
-	*/	
+	
+    /*! @brief 重载*运算符获取当前边 */
 	CEdge * operator*(){ return value(); };
-	/*!
-		MeshEdgeIterator prefix operator ++, goes to the next edge
-	*/	
-	void operator++() { ++ m_iter; }; //prefix
-	/*!
-		MeshEdgeIterator postfix operator ++, goes to the next edge
-	*/	
-	void operator++(int) {m_iter++; }; //postfix
-	/*!
-		Indicate whether all the edges have been accessed.
-	*/	
+	
+    /*! @brief 前缀++，跳到下一条边 */
+	void operator++() { ++ m_iter; }; //前缀形式
+	
+    /*! @brief 后缀++，跳到下一条边 */
+	void operator++(int) {m_iter++; }; //后缀形式
+	
+    /*! @brief 判断是否遍历完所有边 */
 	bool end() { return m_iter == m_pMesh->edges().end(); }
 
-
 private:
-	/*!
-	current mesh
-	*/
-	CBaseMesh<CVertex,CEdge,CFace,CHalfEdge> * m_pMesh;
-	/*!
-	current edge list iterator
-	*/
-	typename std::list<CEdge*>::iterator m_iter;
+	CBaseMesh<CVertex,CEdge,CFace,CHalfEdge> *        m_pMesh; //!< 目标网格，遍历它的所有边
+	typename std::list<CEdge*>::iterator              m_iter;  //!< std::list迭代器，封装内部遍历
 };
 
-// Mesh->he
 /*!
-	\brief MeshHalfEdgeIterator, transverse all the halfedges in the mesh.
-*/
+ * \class MeshHalfEdgeIterator
+ * \brief 网格半边迭代器，遍历整个网格所有半边
+ * \note 每条边包含两个半边，所以依次遍历每个边的两个半边
+ */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 class MeshHalfEdgeIterator
 {
 public:
-	/*!
-	MeshHalfedgeIterator constructor, 
-	\param pMesh the current mesh
-	*/
+    /*!
+     * @brief 构造函数
+     * @param pMesh 目标网格指针，遍历它所有半边
+     */
 	MeshHalfEdgeIterator( CBaseMesh<CVertex,CEdge,CFace,CHalfEdge> * pMesh )
 	{
-     m_pMesh = pMesh;
-     m_iter = m_pMesh->edges().begin();
-     m_id = 0;
+        m_pMesh = pMesh;
+        m_iter = m_pMesh->edges().begin();
+        m_id = 0; // 从每个边的0号半边开始
 	}
-	/*!
-	The halfedge, pointed by the current iterator
-	*/	
-	CHalfEdge * value() { CEdge * e = *m_iter; return (CHalfEdge*)e->halfedge(m_id); };
-	/*!
-	The halfedge, pointed by the current iterator
-	*/	
-	CHalfEdge * operator*(){ return value(); };
-	/*!
-		MeshVertexIterator prefix operator ++, goes to the next halfedge 
-	*/
-	void operator++() //prefix
-	{ 
-		++m_id;
-
-		switch( m_id )
-		{
-		case 1:
-			{
-				CEdge * e = *m_iter;
-				if( e->halfedge(m_id) == NULL )
-				{
-					m_id = 0;
-					++ m_iter;
-				}
-			}
-			break;
-		case 2:
-			m_id = 0;
-			++m_iter;
-			break;
-		}
-	};
-	/*!
-		MeshVertexIterator postfix operator ++, goes to the next vertex 
-	*/
-	void operator++(int) //postfix
-	{ 
-		++m_id;
-
-		switch( m_id )
-		{
-		case 1:
-			{
-				CEdge * e = *m_iter;
-				if( e->halfedge(m_id) == NULL )
-				{
-					m_id = 0;
-					++ m_iter;
-				}
-			}
-			break;
-		case 2:
-			m_id = 0;
-			++m_iter;
-			break;
-		}
-	};
-	/*!
-	Indicate whether all the halfedges have been accessed
-	*/
-	bool end() { return m_iter == m_pMesh->edges().end(); }
 	
+    /*! @brief 获取当前半边 */
+	CHalfEdge * value() { 
+        CEdge * e = *m_iter; 
+        return (CHalfEdge*)e->halfedge(m_id); 
+    };
+	
+    /*! @brief 重载*运算符获取当前半边 */
+	CHalfEdge * operator*(){ return value(); };
+	
+    /*! @brief 前缀++，跳到下一个半边 */
+	void operator++() //前缀形式
+	{ 
+		++m_id;
+
+		switch( m_id )
+		{
+		case 1:
+			{
+				CEdge * e = *m_iter;
+				if( e->halfedge(m_id) == NULL )
+				{
+					m_id = 0;
+					++ m_iter;
+				}
+			}
+			break;
+		case 2:
+			m_id = 0;
+			++m_iter;
+			break;
+		}
+	};
+	
+    /*! @brief 后缀++，跳到下一个半边 */
+	void operator++(int) //后缀形式
+	{ 
+		++m_id;
+
+		switch( m_id )
+		{
+		case 1:
+			{
+				CEdge * e = *m_iter;
+				if( e->halfedge(m_id) == NULL )
+				{
+					m_id = 0;
+					++ m_iter;
+				}
+			}
+			break;
+		case 2:
+			m_id = 0;
+			++m_iter;
+			break;
+		}
+	};
+	
+    /*! @brief 判断是否遍历完所有半边 */
+	bool end() { return m_iter == m_pMesh->edges().end(); }
 
 private:
-	/*!
-		Current halfedge
-	*/
-	CHalfEdge * m_he;
-	/*!
-		Current mesh
-	*/
-	CBaseMesh<CVertex,CEdge,CFace,CHalfEdge> *	 m_pMesh;
-	/*!
-		Current edge list iterator
-	*/
-	typename std::list<CEdge*>::iterator m_iter;
-	int  m_id;
+	CHalfEdge *                                      m_he;   //!< 未使用，保留成员
+	CBaseMesh<CVertex,CEdge,CFace,CHalfEdge> *       m_pMesh; //!< 目标网格，遍历它的所有半边
+	typename std::list<CEdge*>::iterator             m_iter;  //!< 当前正在遍历的边迭代器
+	int                                             m_id;    //!< 当前边的第几个半边（0或1）
 };
 
 
-} //Iterators
+} // namespace MeshLib
 
 #endif
