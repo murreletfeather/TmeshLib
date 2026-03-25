@@ -1028,10 +1028,10 @@ void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::read_obj( const char * filename )
 	labelBoundary();
 }
 
-/*! Create a face
-	\param v an array of vertices
-	\param id face id
-	\return pointer to the new face
+/*! 创建面
+	\param v 顶点数组
+	\param id 面ID
+	\return 新创建面的指针
 	*/
 
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
@@ -1089,11 +1089,11 @@ CFace * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::createFace( tVertex  v[] , int
 };
 
 
-//access id->v
+// 根据ID访问顶点
 /*!
-Access a vertex by its id
-\param id the vertex id
-\return the vertex, whose ID equals to id. NULL, if there is no such a vertex.
+	通过ID访问顶点
+	\param id 顶点ID
+	\return ID等于id的顶点，如果不存在返回NULL
 */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 CVertex * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::idVertex( int id ) 
@@ -1101,46 +1101,46 @@ CVertex * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::idVertex( int id )
 	return m_map_vert[id];
 };
 
-//access v->id
+// 获取顶点ID
 /*!
-	The vertex id
-	\param v the input vertex
-	\return the vertex id.
-	*/
+	获取顶点ID
+	\param v 输入顶点
+	\return 顶点ID
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline int CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::vertexId( tVertex   v )
 {
 	return v->id();
 };
 
-//access id->f
+// 根据ID访问面
 /*!
-	Access a face by its id
-	\param id the face id
-	\return the face, whose ID equals to id. NULL, if there is no such a face.
-	*/
+	通过ID访问面
+	\param id 面ID
+	\return ID等于id的面，如果不存在返回NULL
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 CFace * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::idFace( int id )
 {
 	return m_map_face[id];
 };
 
-//acess f->id
+// 获取面ID
 /*!
-	The face id
-	\param f the input face
-	\return the face id.
-	*/
+	获取面ID
+	\param f 输入面
+	\return 面ID
+*/
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline int CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::faceId( tFace   f )
 {
 	return f->id();
 };
 
-/*! Create an edge
-\param v1 end vertex of the edge
-\param v2 end vertex of the edge
-\return pointer to the new edge
+/*! 创建边
+\param v1 边的第一个端点
+\param v2 边的第二个端点
+\return 新创建边的指针
 */
 
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
@@ -1175,14 +1175,14 @@ CEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::createEdge( tVertex  v1, tVert
 	return e;
 };
 
-//access vertex->edge
+// 通过两个顶点访问边
 /*!
-Access an edge by its two end vertices
-\param v0 one vertex of the edge
-\param v1 the other vertex of the edge
-\return the edge connecting both v0 and v1, NULL if no such edge exists.
+	通过两个端点访问边
+	\param v0 边的一个顶点
+	\param v1 边的另一个顶点
+	\return 连接v0和v1的边，如果不存在返回NULL
 */
-//use the edge list associated with each vertex to locate the edge
+// 使用每个顶点关联的边列表来定位边
 
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::vertexEdge( tVertex  v0, tVertex  v1 )
@@ -1201,13 +1201,14 @@ inline CEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::vertexEdge( tVertex  v0
 };
 
 /*!
-Access a halfedge by its two end vertices
-\param v0 one vertex of the halfedge
-\param v1 the other vertex of the halfedge
-\return the halfedge connecting both v0 and v1, NULL if no such edge exists.
+	通过两个端点访问半边
+	\param v0 半边的一个顶点
+	\param v1 半边的另一个顶点
+	\return 连接v0和v1的半边，如果不存在返回NULL
 */
 
-//access vertex->halfedge
+// 顶点 -> 半边访问
+
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::vertexHalfedge( tVertex  v0, tVertex  v1 )
 {
@@ -1222,24 +1223,26 @@ inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::vertexHalfedge( tVe
 
 
 /*!
-Access the edge list of a vertex, {e} such that e->vertex1() == v
-\param v vertex
-\return the list of adjacent edges
+	获取顶点的边列表，只包含第一个顶点是v的边
+	\param v 输入顶点
+	\return 邻接边列表的引用
 */
 
-//access vertex->edges
+// 顶点 -> 边列表访问
+
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline std::list<CEdge*> & CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::vertexEdges( tVertex  v0 )
 {
 	return (std::list<CEdge*> &)v0->edges();
 };
 
-//access vertex->halfedge
+// 顶点 -> 半边访问
 /*!
-	The halfedge targeting at a vertex. 
-	\param v the input vertex.
-	\return the halfedge targeting at v, which is the most ccw in halfedge of v.
-	*/
+	获取指向顶点v的半边，它是顶点v所有半边中最逆时针的
+	\param v 输入顶点
+	\return 指向顶点v的最逆时针半边
+*/
+
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::vertexHalfedge( tVertex  v  )
 {
@@ -1247,9 +1250,10 @@ inline CHalfEdge * CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::vertexHalfedge( tVe
 };
 
 /*!
-	Read an .m file.
-	\param input the input obj file name
+	读取.m文件
+	\param input 输入.m文件名
 	*/
+
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::read_m( const char * input )
 {
@@ -1490,9 +1494,10 @@ void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::read_m( const char * input )
 };
 
 /*!
-	Write an .m file.
-	\param output the output .m file name
+	写入.m文件
+	\param output 输出.m文件名
 	*/
+
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::write_m( const char * output )
 {
@@ -1601,11 +1606,12 @@ void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::write_m( const char * output )
 };
 
 
-//assume the mesh is with uv coordinates and normal vector for each vertex
+// 假设网格每个顶点都包含uv坐标和法向量
 /*!
-	Write an .obj file.
-	\param output the output .obj file name
+	写入.obj文件
+	\param output 输出.obj文件名
 	*/
+
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::write_obj( const char * output )
 {
@@ -1683,9 +1689,10 @@ void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::write_obj( const char * output )
 };
 
 /*!
-	Write an .off file.
-	\param output the output .off file name
+	写入.off文件
+	\param output 输出.off文件名
 	*/
+
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::write_off( const char * output )
 {
@@ -1735,10 +1742,10 @@ void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::write_off( const char * output )
 };
 
 
-//template pointer converting to base class pointer is OK (BasePointer) = (TemplatePointer)
-//(TemplatePointer)=(BasePointer) is incorrect
-/*! delete one face
-\param pFace the face to be deleted
+// 模板指针转换说明：基类指针 = 派生类指针 是允许的
+// 反之：派生类指针 = 基类指针 是不正确的
+/*! 删除一个面
+\param pFace 要删除的面指针
 */
 
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
@@ -1810,9 +1817,10 @@ void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::deleteFace( tFace  pFace )
 };
 
 /*!
-	Read an .off file
-	\param input the input .off filename
+	读取.off文件
+	\param input 输入.off文件名
 	*/
+
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::read_off( const char * input )
 {
@@ -1915,7 +1923,7 @@ void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::read_off( const char * input )
 
 
 /*!
-	Label boundary edges, vertices
+	标记边界边和边界顶点
 */
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
 void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::labelBoundary( void )
@@ -1989,10 +1997,10 @@ void CBaseMesh<CVertex,CEdge,CFace,CHalfEdge>::labelBoundary( void )
 
 };
 
-/*! Create a face
-	\param v an array of vertices
-	\param id face id
-	\return pointer to the new face
+/*! 创建面
+	\param v 顶点向量数组
+	\param id 面ID
+	\return 新创建面的指针
 	*/
 
 template<typename CVertex, typename CEdge, typename CFace, typename CHalfEdge>
